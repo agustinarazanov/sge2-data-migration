@@ -53,6 +53,9 @@ async function main() {
     await prisma.$queryRawTyped(sql.insertArmario(admin));
     await prisma.$queryRawTyped(sql.insertEstante(admin));
 
+    await prisma.$queryRawTyped(sql.insertSoftware(admin));
+    await prisma.$queryRawTyped(sql.insertSoftwareLaboratorio(admin));
+
     await prisma.$queryRawTyped(sql.insertEquipoTipo(admin));
     await prisma.$queryRawTyped(sql.insertEquipoMarca(admin));
     await prisma.$queryRawTyped(sql.insertEquipoEstado(admin));

@@ -14,7 +14,7 @@
     "source" : {
         "host"             : "127.0.0.1",
         "port"             : 3306,
-        "database"         : "sample_stuff",
+        "database"         : "sge2",
         "charset"          : "utf8mb4",
         "supportBigNumbers": true,
         "user"             : "root",
@@ -97,7 +97,7 @@
         "A name of the schema, that will contain all migrated tables.",
         "If not supplied, then a new schema will be created automatically."
     ],
-    "schema" : "public",
+    "schema" : "old",
 
     "exclude_tables_description": [
         "List (Array) of tables, that will not be migrated.",

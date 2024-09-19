@@ -1,0 +1,1443 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema", "typedSql"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["old", "public"]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model actas_consejeros {
+  login       String?   @db.VarChar(40)
+  posicion    Int?      @db.SmallInt
+  fecha       DateTime? @db.Date
+  comentarios String?   @db.VarChar(200)
+  acta        String?   @db.VarChar(100)
+
+  @@ignore
+  @@schema("old")
+}
+
+model armarios {
+  armario_id     BigInt @id @default(autoincrement())
+  armario        String @db.VarChar(30)
+  laboratorio_id Int
+
+  @@schema("old")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model contador_sugerencias {
+  num_sugerencia Int?
+  num_ventanilla Int?
+
+  @@ignore
+  @@schema("old")
+}
+
+model correlativas {
+  materia_id           Int     @id
+  cursar_regularizadas String? @db.VarChar(30)
+  cursar_aprobadas     String? @db.VarChar(30)
+  rendir_aprobadas     String? @db.VarChar(30)
+
+  @@schema("old")
+}
+
+model country {
+  en      String @unique(map: "country_en_idx") @default("") @db.VarChar(64)
+  es      String @default("") @db.VarChar(64)
+  iso     String @id @default("") @db.Char(2)
+  iso3    String @default("") @db.Char(3)
+  numcode Int    @db.SmallInt
+
+  @@schema("old")
+}
+
+model cursos {
+  curso_id        Int     @id @default(autoincrement())
+  materia_id      Int?
+  division_id     Int?
+  turno_id        Int
+  horainicio      String? @db.VarChar(1)
+  duracion        String? @db.VarChar(1)
+  dia             Int?    @db.SmallInt
+  horainicio2     String? @db.VarChar(1)
+  duracion2       String? @db.VarChar(1)
+  dia2            Int?    @db.SmallInt
+  profesor_userid String? @db.VarChar(8)
+  ayudante_userid String? @db.VarChar(20)
+  anio            Int?    @db.SmallInt
+  sede_id         Int?
+  activo          Int     @default(1) @db.SmallInt
+  AC              String  @db.VarChar(1)
+  prioridad       Int     @default(0) @db.SmallInt
+
+  @@schema("old")
+}
+
+model cursos_turno {
+  turno_id Int    @id
+  turno    String @db.VarChar(7)
+
+  @@schema("old")
+}
+
+model dias {
+  dia_id Int    @id
+  dia    String @db.VarChar(10)
+
+  @@schema("old")
+}
+
+model divisiones {
+  division_id BigInt @id @default(autoincrement())
+  division    String @unique(map: "divisiones_division_idx") @db.VarChar(5)
+  anio        Int
+
+  @@schema("old")
+}
+
+model documento {
+  documento_id BigInt @id @default(autoincrement())
+  documento    String @db.VarChar(10)
+
+  @@schema("old")
+}
+
+model electrocomponentes {
+  certificado_id      Int      @id @default(autoincrement())
+  userid              Int
+  materia_id          Int
+  profesor_userid     Int
+  profesor_materia_id Int
+  datetime            DateTime @db.Timestamp(6)
+  activo              Int      @default(1) @db.SmallInt
+
+  @@schema("old")
+}
+
+model equipos {
+  equipo_id         BigInt    @id @default(autoincrement())
+  inventario        String    @unique(map: "equipos_inventario_idx") @db.VarChar(30)
+  marca             String    @db.VarChar(30)
+  modelo            String    @db.VarChar(30)
+  numeroserie       String    @db.VarChar(30)
+  tipo_id           Int       @db.SmallInt
+  sede_id           Int       @db.SmallInt
+  laboratorio_id    Int
+  armario_id        Int?
+  estante_id        Int?
+  estado_id         Int       @db.SmallInt
+  observaciones     String?
+  alta_date         DateTime  @db.Timestamp(6)
+  alta_userid       Int
+  modificado_date   DateTime? @db.Timestamp(6)
+  modificado_userid Int?
+  palabras_claves   String?
+  imagen_path       String?   @db.VarChar(50)
+
+  @@schema("old")
+}
+
+model equipos_estados {
+  estado_id BigInt @id @default(autoincrement())
+  estado    String @db.VarChar(30)
+
+  @@schema("old")
+}
+
+model equipos_prestamos {
+  prestamo_id       Int       @id @default(autoincrement())
+  equipo_id         Int
+  prestado_a_userid Int
+  date_desde        DateTime  @db.Date
+  date_hasta        DateTime  @db.Date
+  devuelto          Int       @default(0) @db.SmallInt
+  presto_userid     Int
+  renovo_userid     Int?
+  renovo_datetime   DateTime? @db.Timestamp(6)
+  recibio_userid    Int?
+  recibio_datetime  DateTime? @db.Timestamp(6)
+  numeroreserva     Int       @db.SmallInt
+
+  @@schema("old")
+}
+
+model equipos_tipos {
+  tipo_id BigInt @id @default(autoincrement())
+  tipo    String @unique(map: "equipos_tipos_tipo_idx") @db.VarChar(30)
+
+  @@schema("old")
+}
+
+model estantes {
+  estante_id BigInt @id @default(autoincrement())
+  estante    String @db.VarChar(30)
+  armario_id Int
+
+  @@schema("old")
+}
+
+model eventos {
+  titulo      String?   @db.VarChar(50)
+  fecha       DateTime? @db.Date
+  lugar       String?   @db.VarChar(50)
+  cupo        BigInt?
+  descripcion String?   @db.VarChar(300)
+  presentes   String?   @db.VarChar(500)
+  hora_inicio DateTime? @db.Time(6)
+  hora_fin    DateTime? @db.Time(6)
+  evento_id   Int       @id @default(autoincrement())
+  config      String?   @db.VarChar(10)
+
+  @@schema("old")
+}
+
+model fallas_instrumental {
+  falla_id           Int      @id @default(autoincrement())
+  equipo_id          Int?
+  equipo_descripcion String?  @db.VarChar(500)
+  observaciones      String   @db.VarChar(500)
+  detalles           String?  @db.VarChar(500)
+  reporto_userid     Int
+  reporto_datetime   DateTime @db.Timestamp(6)
+  numero_falla       Int      @default(0)
+  reparado           Int      @default(0) @db.SmallInt
+  asignado_a_userid  Int?
+  reparo_metodo      String?  @db.VarChar(500)
+  palabras_claves    String?
+
+  @@schema("old")
+}
+
+model fallas_pc {
+  falla_id          Int      @id @default(autoincrement())
+  laboratorio_id    Int
+  equipo            String   @db.VarChar(10)
+  marca             String?  @db.VarChar(20)
+  modelo            String?  @db.VarChar(20)
+  fallas_en         String   @db.VarChar(100)
+  descripcion       String   @db.VarChar(500)
+  reporto_userid    Int
+  reporto_datetime  DateTime @db.Timestamp(6)
+  numero_falla      Int      @default(0)
+  reparado          Int      @default(0) @db.SmallInt
+  asignado_a_userid Int?
+  reparo_metodo     String?  @db.VarChar(500)
+  palabras_claves   String?
+
+  @@schema("old")
+}
+
+model inscripciones_especiales {
+  userid          Int?
+  fecha           DateTime? @db.Date
+  caso            String?   @db.VarChar(50)
+  num_inscripcion Int       @id @default(autoincrement())
+  materia1        String?   @db.VarChar(50)
+  materia2        String?   @db.VarChar(50)
+  materia3        String?   @db.VarChar(50)
+  materia4        String?   @db.VarChar(50)
+  justificacion1  String?   @db.VarChar(400)
+  justificacion2  String?   @db.VarChar(400)
+  justificacion3  String?   @db.VarChar(400)
+  justificacion4  String?   @db.VarChar(400)
+  alternativa1    String?   @db.VarChar(150)
+  alternativa2    String?   @db.VarChar(150)
+  legajo          Int?
+  apellido        String?   @db.VarChar(50)
+  nombre          String?   @db.VarChar(50)
+  userid_admin    Int?
+  comentarios     String?   @db.VarChar(300)
+  cursos_ids      String?   @db.VarChar(19)
+  estados         String?   @default("00,00,0000,0") @db.VarChar(12)
+  tramite         Int?      @default(0) @db.SmallInt
+
+  @@schema("old")
+}
+
+model lababierto {
+  reserva_id        Int      @id @default(autoincrement())
+  usuario_id        Int
+  fecha             DateTime @db.Date
+  hora_inicio       String   @db.VarChar(5)
+  hora_fin          String   @db.VarChar(5)
+  cant_personas     Int
+  lababierto_tipo   Int
+  laboratorio_id    Int?     @default(0) @db.SmallInt
+  sede_id           Int?     @db.SmallInt
+  asignado_tutor_id Int      @default(0)
+  especialidad      String?  @db.VarChar(20)
+  descripcion       String?  @db.VarChar(255)
+  instrumental      String?  @db.VarChar(255)
+  numeroreserva     Int
+  mail_confirmacion Int      @default(0) @db.SmallInt
+  asigno_userid     Int
+
+  @@schema("old")
+}
+
+model lababierto_tipo {
+  tipo_id Int    @id @default(autoincrement())
+  tipo    String @unique(map: "lababierto_tipo_tipo_idx") @db.VarChar(10)
+
+  @@schema("old")
+}
+
+model lababierto_tutores {
+  userid         Int     @unique(map: "lababierto_tutores_userid_idx")
+  tutor_tipo     Int
+  observaciones  String? @db.VarChar(60)
+  especialidades String? @db.VarChar(20)
+  activo         Int     @default(1) @db.SmallInt
+
+  @@schema("old")
+}
+
+model laboratorios {
+  laboratorio_id Int    @id @default(autoincrement())
+  laboratorio    String @unique(map: "laboratorios_laboratorio_idx") @db.VarChar(25)
+  sede_id        Int
+  tiene_pc       Int    @default(0) @db.SmallInt
+  para_reservas  Int    @default(1) @db.SmallInt
+
+  @@schema("old")
+}
+
+model laboratorios_aplicaciones {
+  programa_id  Int     @id @default(autoincrement())
+  programa     String  @db.VarChar(100)
+  version      String? @db.VarChar(10)
+  laboratorios String  @db.VarChar(40)
+  estado       String? @db.VarChar(50)
+
+  @@schema("old")
+}
+
+model laboratorios_reservas {
+  reserva_id            Int      @id @default(autoincrement())
+  fecha                 DateTime @db.Date
+  curso_id              Int
+  laboratorio_id        Int      @db.SmallInt
+  necesita_pc           Int      @default(0) @db.SmallInt
+  necesita_proyector    Int      @default(0) @db.SmallInt
+  necesita_instrumental Int      @default(0) @db.SmallInt
+  observaciones         String?
+  reservo_userid        Int?
+  asignolab_userid      Int?
+  cancelo_userid        Int?
+  numeroreserva         Int      @db.SmallInt
+  fuera_de_cursada      Int      @default(0) @db.SmallInt
+  turno_reserva         Int      @default(0) @db.SmallInt
+
+  @@schema("old")
+}
+
+model libros {
+  libro_id       BigInt   @id @default(autoincrement())
+  biblioteca_id  String?  @db.VarChar(8)
+  inventario     String   @unique(map: "libros_inventario_idx") @db.VarChar(6)
+  laboratorio_id Int
+  armario_id     Int
+  estante_id     Int
+  titulo         String   @db.VarChar(100)
+  autor          String   @db.VarChar(60)
+  anio           String?  @db.VarChar(4)
+  editorial_id   Int?
+  isbn           String?  @db.VarChar(25)
+  idioma_id      Int?
+  materias       String?  @db.VarChar(20)
+  alta_date      DateTime @db.Date
+  alta_userid    Int
+
+  @@schema("old")
+}
+
+model libros_editoriales {
+  editorial_id BigInt @id @default(autoincrement())
+  editorial    String @db.Char(40)
+
+  @@schema("old")
+}
+
+model libros_idiomas {
+  idioma_id BigInt @id @default(autoincrement())
+  idioma    String @db.Char(30)
+
+  @@schema("old")
+}
+
+model libros_prestamos {
+  prestamo_id       Int       @id @default(autoincrement())
+  libro_id          Int
+  prestado_a_userid Int
+  date_desde        DateTime  @db.Date
+  date_hasta        DateTime  @db.Date
+  devuelto          Int       @default(0) @db.SmallInt
+  presto_userid     Int
+  renovo_userid     Int?
+  renovo_datetime   DateTime? @db.Timestamp(6)
+  recibio_userid    Int?
+  recibio_datetime  DateTime? @db.Timestamp(6)
+  numeroreserva     Int       @db.SmallInt
+
+  @@schema("old")
+}
+
+model manuales {
+  Numero      Int      @id @default(autoincrement())
+  Nombre      String   @db.VarChar(120)
+  Fabricante  String   @db.VarChar(120)
+  Modelo      String   @db.VarChar(120)
+  Archivo     String   @db.VarChar(150)
+  Descripcion String
+  Visible     Int      @default(1) @db.SmallInt
+  Fecha       DateTime @default(now()) @db.Timestamp(6)
+
+  @@schema("old")
+}
+
+model materias {
+  materia_id      Int     @id @default(autoincrement())
+  materia         String  @db.VarChar(50)
+  codigo          String  @unique(map: "materias_codigo_idx") @db.VarChar(8)
+  anio            Int
+  duracion        Int
+  tipo            Int
+  director_userid String? @db.VarChar(10)
+  jtp_userid      String? @db.VarChar(10)
+
+  @@schema("old")
+}
+
+model materias_cuatrimestre {
+  codigo       String  @id @db.VarChar(8)
+  cuatrimestre BigInt?
+
+  @@schema("old")
+}
+
+model materias_duracion {
+  duracion_id Int    @id @default(autoincrement())
+  duracion    String @db.VarChar(15)
+
+  @@schema("old")
+}
+
+model materias_tipo {
+  tipo_id Int     @id @default(autoincrement())
+  tipo    String? @db.VarChar(30)
+
+  @@schema("old")
+}
+
+model mayer_envios {
+  envio_id             Int      @id @default(autoincrement())
+  envio_userid         Int
+  monto_total          Float    @db.Real
+  datetime             DateTime @db.Timestamp(6)
+  solicitudes_enviadas String   @db.VarChar(50)
+  ziplink              String   @db.VarChar(150)
+  envio_numero         Int
+
+  @@schema("old")
+}
+
+model mayer_pedidos {
+  solicitud_id     Int      @id @default(autoincrement())
+  userid           Int
+  cantidad         Int
+  type_pedido_id   Int
+  estado           Int      @db.SmallInt
+  datetime         DateTime @db.Timestamp(6)
+  pago             Int      @default(0) @db.SmallInt
+  linkarchivo      String   @unique(map: "mayer_pedidos_linkarchivo_idx") @db.VarChar(100)
+  rechazo          Int      @default(0) @db.SmallInt
+  aviso_recepcion  Int      @default(0) @db.SmallInt
+  finalizado       Int      @default(0) @db.SmallInt
+  solicitud_numero Int
+  doblefaz         Int      @default(0) @db.SmallInt
+  programa_id      Int
+
+  @@schema("old")
+}
+
+model mayer_programas {
+  programa_id Int    @id @default(autoincrement())
+  programa    String @unique(map: "mayer_programas_programa_idx") @db.VarChar(40)
+
+  @@schema("old")
+}
+
+model mayer_typepedido {
+  type_id Int    @id @default(autoincrement())
+  type    String @unique(map: "mayer_typepedido_type_idx") @db.VarChar(50)
+  precio1 Float  @db.Real
+  precio2 Float  @db.Real
+
+  @@schema("old")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model mesaexamen {
+  materia         String? @db.VarChar(100)
+  userid          Int?    @db.SmallInt
+  fecha           String? @db.VarChar(25)
+  estado          String? @db.VarChar(10)
+  numerosolicitud Int?    @db.SmallInt
+  semana          Int?
+
+  @@ignore
+  @@schema("old")
+}
+
+model ofertas_laborales {
+  oferta_id   Int      @id @default(autoincrement())
+  titulo      String   @db.VarChar(90)
+  descripcion String
+  referencia  Int
+  visible     Int      @db.SmallInt
+  datetime    DateTime @db.Timestamp(6)
+
+  @@schema("old")
+}
+
+model postulantes {
+  nombre   String @db.VarChar(30)
+  apellido String @db.VarChar(30)
+  email    String @unique(map: "postulantes_email_idx") @db.VarChar(30)
+  checked  Int    @db.SmallInt
+
+  @@schema("old")
+}
+
+model practicas_homologacion {
+  practica_id                    Int       @id @default(autoincrement())
+  materia_id                     Int
+  titulo                         String    @db.VarChar(80)
+  numero_practica                Int
+  objetivos                      String    @db.VarChar(600)
+  base_teorica_link1             String?   @db.VarChar(80)
+  base_teorica_link2             String?   @db.VarChar(80)
+  base_teorica_link3             String?   @db.VarChar(80)
+  base_teorica_link4             String?   @db.VarChar(80)
+  base_teorica_link5             String?   @db.VarChar(80)
+  procedimiento_desarrollo_link  String?   @db.VarChar(80)
+  alumnosxgrupo                  Int
+  instrumentales                 String?   @db.VarChar(60)
+  necesita_pc                    Int?      @default(0) @db.SmallInt
+  aplicaciones                   String?   @db.VarChar(30)
+  backoffice                     String?   @db.VarChar(600)
+  preparacion_previa_link        String?   @db.VarChar(80)
+  procedimiento_instalacion_link String?   @db.VarChar(80)
+  alta_por_userid                Int
+  date_alta                      DateTime  @db.Date
+  modificado_por_userid          Int?
+  date_modificado                DateTime? @db.Date
+
+  @@schema("old")
+}
+
+model provinces {
+  iso31662id String @db.VarChar(8)
+  country    String @db.Char(2)
+  name       String @db.VarChar(30)
+
+  @@id([iso31662id, country])
+  @@schema("old")
+}
+
+model publicaciones {
+  publicacion_id           Int      @id @default(autoincrement())
+  responsable_id           Int
+  responsables_secundarios String?  @db.VarChar(30)
+  titulo                   String   @db.VarChar(70)
+  fecha                    DateTime @db.Date
+  hora                     String   @db.VarChar(5)
+  lugar                    String   @db.VarChar(60)
+  fecha_fin_inscripcion    DateTime @db.Date
+  descripcion              String
+  visible                  Int      @db.SmallInt
+  mailxinscripto           Int      @db.SmallInt
+  vacantes                 Int?
+  publicacion_numero       Int      @db.SmallInt
+  datetime                 DateTime @db.Timestamp(6)
+
+  @@schema("old")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model publicaciones_inscriptos {
+  userid         Int
+  publicacion_id Int
+  asistio        Int      @db.SmallInt
+  datetime       DateTime @db.Timestamp(6)
+  observaciones  String?
+
+  @@index([userid])
+  @@ignore
+  @@schema("old")
+}
+
+model reservas_agregadas {
+  materia     String @db.VarChar(20)
+  laboratorio String @db.VarChar(10)
+  docente     String @db.VarChar(20)
+  comienzo    String @db.VarChar(10)
+  fecha       String @id @db.VarChar(10)
+
+  @@schema("old")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model reservas_discrecionales {
+  reserva_id     Int      @db.SmallInt
+  fecha          DateTime @db.Date
+  materia        String
+  docente        String
+  laboratorio_id Int      @db.SmallInt
+  turno_id       Int      @db.SmallInt
+
+  @@index([reserva_id])
+  @@ignore
+  @@schema("old")
+}
+
+model sedes {
+  sede_id Int    @id @default(autoincrement())
+  sede    String @db.VarChar(30)
+
+  @@schema("old")
+}
+
+model sexo {
+  sexo_id BigInt @id @default(autoincrement())
+  sexo    String @db.VarChar(11)
+
+  @@schema("old")
+}
+
+model staff {
+  userid Int    @id
+  nombre String @db.VarChar(20)
+
+  @@schema("old")
+}
+
+model userdata {
+  usuario_id                BigInt    @id
+  apellido                  String    @db.VarChar(20)
+  nombre                    String    @db.VarChar(30)
+  email                     String    @db.VarChar(50)
+  date_nacimiento           DateTime  @db.Date
+  sexo                      BigInt
+  direccion                 String    @db.VarChar(30)
+  piso                      String?   @db.VarChar(5)
+  depto                     String?   @db.VarChar(5)
+  ciudad                    String    @db.VarChar(30)
+  provincia                 String    @db.Char(1)
+  codigo_postal             String    @db.VarChar(8)
+  nacionalidad              String    @db.Char(2)
+  telefono_casa             String?   @db.VarChar(15)
+  telefono_celular          String?   @db.VarChar(18)
+  telefono_laboral          String?   @db.VarChar(15)
+  documento_tipo            Int
+  documento_numero          String    @db.VarChar(10)
+  legajo                    String    @db.VarChar(8)
+  atributo                  String    @db.VarChar(60)
+  date_registro             DateTime  @db.Date
+  date_ultimo_acceso        DateTime  @db.Date
+  date_ultima_actualizacion DateTime? @db.Date
+  gitlab                    String?   @db.Char(6)
+
+  @@unique([email, legajo], map: "userdata_email_legajo_idx")
+  @@schema("old")
+}
+
+model users {
+  userid         Int     @id @default(autoincrement())
+  login          String  @unique(map: "users_login_idx") @db.VarChar(30)
+  password       String  @db.Char(50)
+  passexpired    Int     @default(1) @db.SmallInt
+  change_encript Int     @default(1) @db.SmallInt
+  login_sinap    String? @db.VarChar(40)
+
+  @@schema("old")
+}
+
+model usuarios_pendientes {
+  pendiente_id Int    @id @default(autoincrement())
+  apellido     String @db.VarChar(30)
+  nombre       String @db.VarChar(30)
+  legajo       String @db.VarChar(20)
+  legajoUTN    String @db.VarChar(20)
+  mail         String @db.VarChar(60)
+  login_sinap  String @unique(map: "usuarios_pendientes_login_sinap_idx") @db.VarChar(40)
+
+  @@schema("old")
+}
+
+model Account {
+  id                       String  @id
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String?
+  access_token             String?
+  expires_at               Int?
+  refresh_expires_in       Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?
+  session_state            String?
+  refresh_token_expires_in Int?
+  User                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@schema("public")
+}
+
+model Armario {
+  id                   Int         @id @default(autoincrement())
+  nombre               String
+  laboratorioId        Int
+  fechaCreacion        DateTime    @default(now())
+  fechaModificacion    DateTime    @default(now())
+  usuarioCreadorId     String
+  usuarioModificadorId String
+  Laboratorio          Laboratorio @relation(fields: [laboratorioId], references: [id], onDelete: Cascade)
+  Equipo               Equipo[]
+  Estante              Estante[]
+  Libro                Libro[]
+
+  @@schema("public")
+}
+
+model Curso {
+  id                        Int                         @id @default(autoincrement())
+  horaInicio1               String
+  duracion1                 String
+  horaInicio2               String?
+  duracion2                 String?
+  dia1                      CursoDia
+  dia2                      CursoDia?
+  anioDeCarrera             Int
+  activo                    Boolean
+  ac                        String
+  sedeId                    Int
+  materiaId                 Int
+  divisionId                Int
+  turno                     TurnoCurso
+  fechaCreacion             DateTime                    @default(now())
+  fechaModificacion         DateTime                    @default(now())
+  usuarioCreadorId          String
+  usuarioModificadorId      String
+  Division                  Division                    @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  Materia                   Materia                     @relation(fields: [materiaId], references: [id], onDelete: Cascade)
+  Sede                      Sede                        @relation(fields: [sedeId], references: [id], onDelete: Cascade)
+  CursoAyudante             CursoAyudante[]
+  CursoProfesor             CursoProfesor[]
+  ReservaLaboratorioCerrado ReservaLaboratorioCerrado[]
+
+  @@index([activo], type: Hash)
+  @@index([anioDeCarrera])
+  @@index([turno], type: Hash)
+  @@schema("public")
+}
+
+model CursoAyudante {
+  cursoId              Int
+  userId               String
+  fechaCreacion        DateTime @default(now())
+  usuarioCreadorId     String
+  fechaModificacion    DateTime @default(now())
+  usuarioModificadorId String
+  Curso                Curso    @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  User                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([cursoId, userId])
+  @@schema("public")
+}
+
+model CursoProfesor {
+  cursoId              Int
+  userId               String
+  fechaCreacion        DateTime @default(now())
+  usuarioCreadorId     String
+  fechaModificacion    DateTime @default(now())
+  usuarioModificadorId String
+  Curso                Curso    @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  User                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([cursoId, userId])
+  @@schema("public")
+}
+
+model Division {
+  id               Int      @id @default(autoincrement())
+  nombre           String
+  anio             Int
+  fechaCreacion    DateTime @default(now())
+  usuarioCreadorId String
+  Curso            Curso[]
+
+  @@index([anio])
+  @@index([nombre])
+  @@schema("public")
+}
+
+model DocumentoTipo {
+  id     Int    @id @default(autoincrement())
+  nombre String
+  User   User[]
+
+  @@schema("public")
+}
+
+model Equipo {
+  id                              Int                               @id @default(autoincrement())
+  inventarioId                    String                            @unique
+  modelo                          String?
+  numeroSerie                     String?
+  observaciones                   String?
+  palabrasClave                   String?
+  imagen                          String?
+  tipoId                          Int
+  marcaId                         Int
+  sedeId                          Int
+  laboratorioId                   Int
+  armarioId                       Int?
+  estanteId                       Int?
+  estadoId                        Int
+  disponible                      Boolean                           @default(true)
+  fechaCreacion                   DateTime                          @default(now())
+  fechaModificacion               DateTime                          @default(now())
+  usuarioCreadorId                String
+  usuarioModificadorId            String
+  Armario                         Armario?                          @relation(fields: [armarioId], references: [id], onDelete: Restrict)
+  EquipoEstado                    EquipoEstado                      @relation(fields: [estadoId], references: [id])
+  Estante                         Estante?                          @relation(fields: [estanteId], references: [id], onDelete: Restrict)
+  Laboratorio                     Laboratorio                       @relation(fields: [laboratorioId], references: [id])
+  EquipoMarca                     EquipoMarca                       @relation(fields: [marcaId], references: [id])
+  Sede                            Sede                              @relation(fields: [sedeId], references: [id], onDelete: Cascade)
+  EquipoTipo                      EquipoTipo                        @relation(fields: [tipoId], references: [id])
+  ReservaEquipo                   ReservaEquipo[]
+  ReservaLaboratorioAbiertoEquipo ReservaLaboratorioAbiertoEquipo[]
+  ReservaLaboratorioCerradoEquipo ReservaLaboratorioCerradoEquipo[]
+
+  @@index([modelo])
+  @@index([numeroSerie])
+  @@schema("public")
+}
+
+model EquipoEstado {
+  id               Int      @id @default(autoincrement())
+  nombre           String
+  fechaCreacion    DateTime @default(now())
+  usuarioCreadorId String
+  Equipo           Equipo[]
+
+  @@index([nombre])
+  @@schema("public")
+}
+
+model EquipoMarca {
+  id               Int      @id @default(autoincrement())
+  nombre           String
+  fechaCreacion    DateTime @default(now())
+  usuarioCreadorId String
+  Equipo           Equipo[]
+
+  @@index([nombre])
+  @@schema("public")
+}
+
+model EquipoTipo {
+  id               Int      @id @default(autoincrement())
+  nombre           String
+  fechaCreacion    DateTime @default(now())
+  usuarioCreadorId String
+  Equipo           Equipo[]
+
+  @@index([nombre])
+  @@schema("public")
+}
+
+model Estante {
+  id                   Int      @id @default(autoincrement())
+  nombre               String
+  armarioId            Int
+  fechaCreacion        DateTime @default(now())
+  fechaModificacion    DateTime @default(now())
+  usuarioCreadorId     String
+  usuarioModificadorId String
+  Equipo               Equipo[]
+  Armario              Armario  @relation(fields: [armarioId], references: [id], onDelete: Cascade)
+  Libro                Libro[]
+
+  @@schema("public")
+}
+
+model Laboratorio {
+  id                        Int                         @id @default(autoincrement())
+  nombre                    String
+  tienePc                   Boolean                     @default(false)
+  esAbierto                 Boolean                     @default(false)
+  laboratorioAbiertoTipo    LaboratorioAbiertoTipo?
+  sedeId                    Int
+  fechaCreacion             DateTime                    @default(now())
+  fechaModificacion         DateTime                    @default(now())
+  usuarioCreadorId          String
+  usuarioModificadorId      String
+  Armario                   Armario[]
+  Equipo                    Equipo[]
+  Sede                      Sede                        @relation(fields: [sedeId], references: [id], onDelete: Cascade)
+  Libro                     Libro[]
+  ReservaLaboratorioAbierto ReservaLaboratorioAbierto[]
+  ReservaLaboratorioCerrado ReservaLaboratorioCerrado[]
+  SoftwareLaboratorio       SoftwareLaboratorio[]
+
+  @@index([esAbierto], type: Hash)
+  @@index([laboratorioAbiertoTipo])
+  @@index([nombre])
+  @@index([tienePc], type: Hash)
+  @@schema("public")
+}
+
+model Libro {
+  id                   Int            @id @default(autoincrement())
+  bibliotecaId         String?
+  inventarioId         String         @unique
+  titulo               String
+  anio                 Int
+  isbn                 String?
+  laboratorioId        Int
+  armarioId            Int?
+  estanteId            Int?
+  autorId              Int
+  idiomaId             Int
+  editorialId          Int
+  sedeId               Int
+  disponible           Boolean        @default(true)
+  fechaCreacion        DateTime       @default(now())
+  fechaModificacion    DateTime       @default(now())
+  usuarioCreadorId     String
+  usuarioModificadorId String
+  Armario              Armario?       @relation(fields: [armarioId], references: [id], onDelete: Restrict)
+  LibroAutor           LibroAutor     @relation(fields: [autorId], references: [id])
+  LibroEditorial       LibroEditorial @relation(fields: [editorialId], references: [id])
+  Estante              Estante?       @relation(fields: [estanteId], references: [id], onDelete: Restrict)
+  LibroIdioma          LibroIdioma    @relation(fields: [idiomaId], references: [id])
+  Laboratorio          Laboratorio    @relation(fields: [laboratorioId], references: [id])
+  Sede                 Sede           @relation(fields: [sedeId], references: [id], onDelete: Cascade)
+  LibroMateria         LibroMateria[]
+  ReservaLibro         ReservaLibro[]
+
+  @@index([anio(sort: Desc)])
+  @@index([bibliotecaId])
+  @@index([inventarioId])
+  @@index([titulo])
+  @@schema("public")
+}
+
+model LibroAutor {
+  id               Int      @id @default(autoincrement())
+  autorNombre      String   @unique
+  fechaCreacion    DateTime @default(now())
+  usuarioCreadorId String
+  Libro            Libro[]
+
+  @@index([autorNombre])
+  @@schema("public")
+}
+
+model LibroEditorial {
+  id               Int      @id @default(autoincrement())
+  editorial        String   @unique
+  fechaCreacion    DateTime @default(now())
+  usuarioCreadorId String
+  Libro            Libro[]
+
+  @@index([editorial])
+  @@schema("public")
+}
+
+model LibroIdioma {
+  id               Int      @id @default(autoincrement())
+  idioma           String   @unique
+  fechaCreacion    DateTime @default(now())
+  usuarioCreadorId String
+  Libro            Libro[]
+
+  @@index([idioma])
+  @@schema("public")
+}
+
+model LibroMateria {
+  libroId          Int
+  materiaId        Int
+  fechaCreacion    DateTime @default(now())
+  usuarioCreadorId String
+  Libro            Libro    @relation(fields: [libroId], references: [id], onDelete: Cascade)
+  Materia          Materia  @relation(fields: [materiaId], references: [id], onDelete: Cascade)
+
+  @@id([libroId, materiaId])
+  @@schema("public")
+}
+
+model Materia {
+  id                                                                   Int                  @id @default(autoincrement())
+  nombre                                                               String
+  codigo                                                               String               @unique
+  anio                                                                 Int
+  duracion                                                             MateriaDuracion
+  tipo                                                                 MateriaTipo
+  directorUsuarioId                                                    String?
+  jefeTrabajoPracticoUsuarioId                                         String?
+  fechaCreacion                                                        DateTime             @default(now())
+  fechaModificacion                                                    DateTime             @default(now())
+  usuarioCreadorId                                                     String
+  usuarioModificadorId                                                 String
+  Curso                                                                Curso[]
+  LibroMateria                                                         LibroMateria[]
+  User_Materia_directorUsuarioIdToUser                                 User?                @relation("Materia_directorUsuarioIdToUser", fields: [directorUsuarioId], references: [id])
+  User_Materia_jefeTrabajoPracticoUsuarioIdToUser                      User?                @relation("Materia_jefeTrabajoPracticoUsuarioIdToUser", fields: [jefeTrabajoPracticoUsuarioId], references: [id])
+  MateriaCorrelativa_MateriaCorrelativa_correlativaIdToMateria         MateriaCorrelativa[] @relation("MateriaCorrelativa_correlativaIdToMateria")
+  MateriaCorrelativa_MateriaCorrelativa_materiaPrerequisitoIdToMateria MateriaCorrelativa[] @relation("MateriaCorrelativa_materiaPrerequisitoIdToMateria")
+
+  @@index([anio])
+  @@index([duracion])
+  @@index([nombre])
+  @@index([tipo])
+  @@schema("public")
+}
+
+model MateriaCorrelativa {
+  materiaPrerequisitoId                                     Int
+  correlativaId                                             Int
+  estatusCorrelativa                                        EstatusCorrelativa
+  fechaCreacion                                             DateTime           @default(now())
+  fechaModificacion                                         DateTime           @default(now())
+  usuarioCreadorId                                          String
+  usuarioModificadorId                                      String
+  Materia_MateriaCorrelativa_correlativaIdToMateria         Materia            @relation("MateriaCorrelativa_correlativaIdToMateria", fields: [correlativaId], references: [id])
+  Materia_MateriaCorrelativa_materiaPrerequisitoIdToMateria Materia            @relation("MateriaCorrelativa_materiaPrerequisitoIdToMateria", fields: [materiaPrerequisitoId], references: [id])
+
+  @@id([estatusCorrelativa, materiaPrerequisitoId, correlativaId])
+  @@schema("public")
+}
+
+model Pais {
+  iso            String      @id
+  nombreEspanol  String
+  nombreIngles   String
+  iso3           String
+  codigoNumerico Int
+  Provincia      Provincia[]
+  User           User[]
+
+  @@index([codigoNumerico])
+  @@index([iso3])
+  @@index([nombreEspanol])
+  @@schema("public")
+}
+
+model Permiso {
+  id                   Int          @id @default(autoincrement())
+  nombre               String       @unique
+  fechaCreacion        DateTime     @default(now())
+  fechaModificacion    DateTime     @default(now())
+  usuarioCreadorId     String
+  usuarioModificadorId String
+  RolPermiso           RolPermiso[]
+
+  @@index([nombre])
+  @@schema("public")
+}
+
+model Provincia {
+  iso     String
+  nombre  String
+  paisIso String
+  Pais    Pais   @relation(fields: [paisIso], references: [iso], onDelete: Cascade)
+  User    User[]
+
+  @@id([iso, paisIso])
+  @@index([nombre])
+  @@schema("public")
+}
+
+model Reserva {
+  id                                    Int                        @id @default(autoincrement())
+  estatus                               ReservaEstatus
+  fechaHoraInicio                       DateTime
+  fechaHoraFin                          DateTime
+  tipo                                  ReservaTipo
+  usuarioSolicitoId                     String
+  usuarioAprobadorId                    String
+  usuarioRechazadoId                    String?
+  usuarioRenovoId                       String?
+  usuarioRecibioId                      String?
+  usuarioTutorId                        String?
+  fechaRenovacion                       DateTime?
+  fechaAprobacion                       DateTime?
+  fechaRechazo                          DateTime?
+  fechaRecibido                         DateTime?
+  usuarioCreadorId                      String
+  usuarioModificadorId                  String
+  fechaCreacion                         DateTime                   @default(now())
+  fechaModificacion                     DateTime
+  User_Reserva_usuarioAprobadorIdToUser User                       @relation("Reserva_usuarioAprobadorIdToUser", fields: [usuarioAprobadorId], references: [id])
+  User_Reserva_usuarioRechazadoIdToUser User?                      @relation("Reserva_usuarioRechazadoIdToUser", fields: [usuarioRechazadoId], references: [id], onDelete: Restrict)
+  User_Reserva_usuarioRecibioIdToUser   User?                      @relation("Reserva_usuarioRecibioIdToUser", fields: [usuarioRecibioId], references: [id], onDelete: Restrict)
+  User_Reserva_usuarioRenovoIdToUser    User?                      @relation("Reserva_usuarioRenovoIdToUser", fields: [usuarioRenovoId], references: [id], onDelete: Restrict)
+  User_Reserva_usuarioSolicitoIdToUser  User                       @relation("Reserva_usuarioSolicitoIdToUser", fields: [usuarioSolicitoId], references: [id])
+  User_Reserva_usuarioTutorIdToUser     User?                      @relation("Reserva_usuarioTutorIdToUser", fields: [usuarioTutorId], references: [id], onDelete: Restrict)
+  ReservaEquipo                         ReservaEquipo?
+  ReservaLaboratorioAbierto             ReservaLaboratorioAbierto?
+  ReservaLaboratorioCerrado             ReservaLaboratorioCerrado?
+  ReservaLibro                          ReservaLibro?
+
+  @@index([estatus])
+  @@index([fechaHoraFin])
+  @@index([fechaHoraInicio])
+  @@index([tipo])
+  @@schema("public")
+}
+
+model ReservaEquipo {
+  id                   Int      @id @default(autoincrement())
+  fechaEntregado       DateTime
+  numeroReserva        Int
+  reservaId            Int      @unique
+  equipoId             Int
+  fechaCreacion        DateTime @default(now())
+  fechaModificacion    DateTime @default(now())
+  usuarioCreadorId     String
+  usuarioModificadorId String
+  Equipo               Equipo   @relation(fields: [equipoId], references: [id], onDelete: Cascade)
+  Reserva              Reserva  @relation(fields: [reservaId], references: [id], onDelete: Cascade)
+
+  @@index([fechaEntregado])
+  @@schema("public")
+}
+
+model ReservaLaboratorioAbierto {
+  id                              Int                               @id @default(autoincrement())
+  especialidad                    String
+  descripcion                     String
+  numeroReserva                   Int
+  mailConfirmado                  Boolean
+  reservaId                       Int                               @unique
+  laboratorioId                   Int
+  fechaCreacion                   DateTime                          @default(now())
+  fechaModificacion               DateTime                          @default(now())
+  usuarioCreadorId                String
+  usuarioModificadorId            String
+  Laboratorio                     Laboratorio                       @relation(fields: [laboratorioId], references: [id], onDelete: Cascade)
+  Reserva                         Reserva                           @relation(fields: [reservaId], references: [id], onDelete: Cascade)
+  ReservaLaboratorioAbiertoEquipo ReservaLaboratorioAbiertoEquipo[]
+
+  @@index([especialidad])
+  @@index([mailConfirmado], type: Hash)
+  @@index([numeroReserva])
+  @@schema("public")
+}
+
+model ReservaLaboratorioAbiertoEquipo {
+  id                          Int                       @id @default(autoincrement())
+  cantidad                    Int
+  reservaLaboratorioAbiertoId Int
+  equipoId                    Int
+  fechaCreacion               DateTime                  @default(now())
+  fechaModificacion           DateTime                  @default(now())
+  usuarioCreadorId            String
+  usuarioModificadorId        String
+  Equipo                      Equipo                    @relation(fields: [equipoId], references: [id], onDelete: Cascade)
+  ReservaLaboratorioAbierto   ReservaLaboratorioAbierto @relation(fields: [reservaLaboratorioAbiertoId], references: [id], onDelete: Cascade)
+
+  @@schema("public")
+}
+
+model ReservaLaboratorioCerrado {
+  id                              Int                               @id @default(autoincrement())
+  reservaId                       Int                               @unique
+  laboratorioId                   Int
+  cursoId                         Int
+  fechaCreacion                   DateTime                          @default(now())
+  fechaModificacion               DateTime                          @default(now())
+  usuarioCreadorId                String
+  usuarioModificadorId            String
+  Curso                           Curso                             @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  Laboratorio                     Laboratorio                       @relation(fields: [laboratorioId], references: [id], onDelete: Cascade)
+  Reserva                         Reserva                           @relation(fields: [reservaId], references: [id], onDelete: Cascade)
+  ReservaLaboratorioCerradoEquipo ReservaLaboratorioCerradoEquipo[]
+
+  @@schema("public")
+}
+
+model ReservaLaboratorioCerradoEquipo {
+  id                          Int                       @id @default(autoincrement())
+  cantidad                    Int
+  reservaLaboratorioCerradoId Int
+  equipoId                    Int
+  fechaCreacion               DateTime                  @default(now())
+  fechaModificacion           DateTime                  @default(now())
+  usuarioCreadorId            String
+  usuarioModificadorId        String
+  Equipo                      Equipo                    @relation(fields: [equipoId], references: [id], onDelete: Cascade)
+  ReservaLaboratorioCerrado   ReservaLaboratorioCerrado @relation(fields: [reservaLaboratorioCerradoId], references: [id])
+
+  @@schema("public")
+}
+
+model ReservaLibro {
+  id                   Int      @id @default(autoincrement())
+  fechaEntregado       DateTime
+  reservaId            Int      @unique
+  libroId              Int
+  fechaCreacion        DateTime @default(now())
+  fechaModificacion    DateTime @default(now())
+  usuarioCreadorId     String
+  usuarioModificadorId String
+  Libro                Libro    @relation(fields: [libroId], references: [id], onDelete: Cascade)
+  Reserva              Reserva  @relation(fields: [reservaId], references: [id], onDelete: Cascade)
+
+  @@index([fechaEntregado])
+  @@schema("public")
+}
+
+model Rol {
+  id                   Int          @id @default(autoincrement())
+  nombre               String       @unique
+  fechaCreacion        DateTime     @default(now())
+  fechaModificacion    DateTime     @default(now())
+  usuarioCreadorId     String
+  usuarioModificadorId String
+  RolPermiso           RolPermiso[]
+  UsuarioRol           UsuarioRol[]
+
+  @@index([nombre])
+  @@schema("public")
+}
+
+model RolPermiso {
+  rolId            Int
+  permisoId        Int
+  fechaCreacion    DateTime @default(now())
+  usuarioCreadorId String
+  Permiso          Permiso  @relation(fields: [permisoId], references: [id], onDelete: Cascade)
+  Rol              Rol      @relation(fields: [rolId], references: [id], onDelete: Cascade)
+
+  @@id([rolId, permisoId])
+  @@schema("public")
+}
+
+model Sede {
+  id          Int           @id @default(autoincrement())
+  nombre      String        @unique
+  Curso       Curso[]
+  Equipo      Equipo[]
+  Laboratorio Laboratorio[]
+  Libro       Libro[]
+
+  @@schema("public")
+}
+
+model Session {
+  id           String   @id
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("public")
+}
+
+model Software {
+  id                   Int                   @id @default(autoincrement())
+  nombre               String
+  version              String
+  estado               String
+  fechaCreacion        DateTime              @default(now())
+  fechaModificacion    DateTime              @default(now())
+  usuarioCreadorId     String
+  usuarioModificadorId String
+  SoftwareLaboratorio  SoftwareLaboratorio[]
+
+  @@schema("public")
+}
+
+model SoftwareLaboratorio {
+  softwareId       Int
+  laboratorioId    Int
+  fechaCreacion    DateTime    @default(now())
+  usuarioCreadorId String
+  Laboratorio      Laboratorio @relation(fields: [laboratorioId], references: [id], onDelete: Cascade)
+  Software         Software    @relation(fields: [softwareId], references: [id], onDelete: Cascade)
+
+  @@id([softwareId, laboratorioId])
+  @@schema("public")
+}
+
+model Tutor {
+  userId           String   @id @unique
+  diasHorarios     String
+  sede             String
+  especialidad     String
+  fechaCreacion    DateTime @default(now())
+  usuarioCreadorId String
+  User             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("public")
+}
+
+model User {
+  id                                                 String          @id @default(cuid())
+  name                                               String?
+  email                                              String?         @unique
+  emailVerified                                      DateTime?
+  image                                              String?         @default("/default-avatar.svg")
+  nombre                                             String?
+  apellido                                           String?
+  fechaNacimiento                                    DateTime?
+  sexo                                               Boolean         @default(false)
+  direccion                                          String?
+  piso                                               String?
+  departamento                                       String?
+  ciudad                                             String?
+  codigoPostal                                       String?
+  telefonoCasa                                       String?
+  telefonoCelular                                    String?
+  telefonoLaboral                                    String?
+  documentoNumero                                    String?
+  legajo                                             String?
+  gitlab                                             String?
+  penalizaciones                                     Int             @default(0)
+  esDocente                                          Boolean         @default(false)
+  fechaRegistro                                      DateTime        @default(now())
+  fechaUltimoAcceso                                  DateTime        @default(now())
+  fechaUltimaActualizacion                           DateTime        @default(now())
+  documentoTipoId                                    Int?
+  provinciaIso                                       String?
+  paisIso                                            String?
+  Account                                            Account[]
+  CursoAyudante                                      CursoAyudante[]
+  CursoProfesor                                      CursoProfesor[]
+  Materia_Materia_directorUsuarioIdToUser            Materia[]       @relation("Materia_directorUsuarioIdToUser")
+  Materia_Materia_jefeTrabajoPracticoUsuarioIdToUser Materia[]       @relation("Materia_jefeTrabajoPracticoUsuarioIdToUser")
+  Reserva_Reserva_usuarioAprobadorIdToUser           Reserva[]       @relation("Reserva_usuarioAprobadorIdToUser")
+  Reserva_Reserva_usuarioRechazadoIdToUser           Reserva[]       @relation("Reserva_usuarioRechazadoIdToUser")
+  Reserva_Reserva_usuarioRecibioIdToUser             Reserva[]       @relation("Reserva_usuarioRecibioIdToUser")
+  Reserva_Reserva_usuarioRenovoIdToUser              Reserva[]       @relation("Reserva_usuarioRenovoIdToUser")
+  Reserva_Reserva_usuarioSolicitoIdToUser            Reserva[]       @relation("Reserva_usuarioSolicitoIdToUser")
+  Reserva_Reserva_usuarioTutorIdToUser               Reserva[]       @relation("Reserva_usuarioTutorIdToUser")
+  Session                                            Session[]
+  Tutor                                              Tutor?
+  DocumentoTipo                                      DocumentoTipo?  @relation(fields: [documentoTipoId], references: [id], onDelete: Restrict)
+  Pais                                               Pais?           @relation(fields: [paisIso], references: [iso], onDelete: Restrict)
+  Provincia                                          Provincia?      @relation(fields: [provinciaIso, paisIso], references: [iso, paisIso], onDelete: Restrict)
+  UsuarioRol                                         UsuarioRol[]
+
+  @@index([apellido])
+  @@index([email])
+  @@index([name])
+  @@index([legajo], map: "usuario_legajo_asc_idx")
+  @@index([legajo], map: "usuario_legajo_hash_idx", type: Hash)
+  @@schema("public")
+}
+
+model UsuarioRol {
+  userId           String
+  rolId            Int
+  fechaCreacion    DateTime @default(now())
+  usuarioCreadorId String
+  Rol              Rol      @relation(fields: [rolId], references: [id], onDelete: Cascade)
+  User             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, rolId])
+  @@schema("public")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@schema("public")
+}
+
+enum CursoDia {
+  LUNES
+  MARTES
+  MIERCOLES
+  JUEVES
+  VIERNES
+  SABADO
+  DOMINGO
+
+  @@schema("public")
+}
+
+enum EstatusCorrelativa {
+  CURSAR_REGULARIZADA
+  CURSAR_APROBADA
+  RENDIR_APROBADA
+
+  @@schema("public")
+}
+
+enum LaboratorioAbiertoTipo {
+  LA
+  TLA_BASICA
+  TLA
+
+  @@schema("public")
+}
+
+enum MateriaDuracion {
+  ANUAL
+  CUATRIMESTRAL
+  AMBOS
+
+  @@schema("public")
+}
+
+enum MateriaTipo {
+  INTEGRADORA
+  OBLIGATORIA
+  ELECTIVA
+
+  @@schema("public")
+}
+
+enum ReservaEstatus {
+  PENDIENTE
+  FINALIZADA
+  CANCELADA
+
+  @@schema("public")
+}
+
+enum ReservaTipo {
+  LABORATORIO_ABIERTO
+  LABORATORIO_CERRADO
+  INVENTARIO
+  LIBRO
+
+  @@schema("public")
+}
+
+enum TurnoCurso {
+  MANANA
+  TARDE
+  NOCHE
+
+  @@schema("public")
+}

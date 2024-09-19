@@ -33,6 +33,6 @@
     "include": [
         "src/**/*",
         "test/**/*",
-        "script.ts"
+        "scripts/script.ts"
     ]
 }

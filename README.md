@@ -11,8 +11,8 @@ Completar la sección "target" en config/config.json y la variable DATABASE_URL 
 Es necesario que la base de datos objetivo exista.
 
 ### Migración
-Copiar el dump de MySQL en el directorio actual con el nombre dump.sql y ejecutar:
+Copiar el dump de MySQL en el directorio "scripts" con el nombre dump.sql y ejecutar:
 
 ```bash
-sh migrate.sh
+sh scripts/migrate.sh
 ```

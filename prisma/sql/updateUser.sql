@@ -20,9 +20,11 @@ update "public"."User" "user" set
     "telefonoLaboral" = "u"."telefono_laboral",
     "documentoTipoId" = "documento"."id",
     "provinciaIso" = "provincia"."iso",
-    "paisIso" = "pais"."iso"
+    "paisIso" = "pais"."iso",
+    "esDocente" = case when "c"."profesor_userid" is null then false else true end
 from "old"."userdata" "u"
 left join "old"."documento" "d" on "d"."documento_id" = "u"."documento_tipo"
+left join "old"."cursos" "c" on "c"."profesor_userid"::int = "u"."usuario_id"
 left join "public"."DocumentoTipo" "documento" on "documento"."nombre" = "d"."documento"
 left join "public"."Pais" "pais" on "nacionalidad" = "pais"."iso"
 left join "public"."Provincia" "provincia" on "provincia" = "provincia"."iso" and "pais"."iso" = "provincia"."paisIso"

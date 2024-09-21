@@ -10,13 +10,8 @@ async function main() {
     await prisma.$queryRawTyped(sql.insertPais());
     await prisma.$queryRawTyped(sql.insertProvincia());
 
-    const userdata = await prisma.userdata.findMany({
-        select: { usuario_id: true, email: true },
-        where: { email: { contains: "@frba.utn.edu.ar" } },
-    });
-
+    const userdata = await prisma.$queryRawTyped(sql.selectUserdata());
     await prisma.user.createMany({ data: userdata.map((u) => ({ email: u.email })) });
-
     await prisma.$queryRawTyped(sql.updateUser());
 
     const admin =
@@ -72,7 +67,6 @@ async function main() {
 
     await prisma.$queryRawTyped(sql.insertDivision(admin));
     await prisma.$queryRawTyped(sql.insertCurso(admin));
-    await prisma.$queryRawTyped(sql.insertCursoProfesor(admin));
     await prisma.$queryRawTyped(sql.insertCursoAyudante(admin));
 
     await prisma.$queryRawTyped(sql.insertPermiso(admin));
@@ -132,16 +126,16 @@ async function main() {
     await prisma.$queryRawTyped(sql.updateEquipo3());
     await prisma.$queryRawTyped(sql.updateEquipo4());
 
-    console.log("Migración completa!");
+    console.log("¡Migración completa!");
     console.log("Verificando datos...");
 
-    console.assert(await prisma.libro.count() === await prisma.libros.count());
-    console.assert(await prisma.materia.count() === await prisma.materias.count());
-    console.assert(await prisma.equipo.count() === await prisma.equipos.count());
-    console.assert(await prisma.curso.count() === await prisma.cursos.count({ where: { horainicio: { not: null } } }));
-    console.assert(await prisma.division.count() === await prisma.divisiones.count());
+    console.assert(await prisma.libro.count() === await prisma.libros.count(), "Hubo errores en la migración de libros");
+    console.assert(await prisma.materia.count() === await prisma.materias.count(), "Hubo errores en la migración de materias");
+    console.assert(await prisma.equipo.count() === await prisma.equipos.count(), "Hubo errores en la migración de equipos");
+    console.assert(await prisma.curso.count() === await prisma.cursos.count({ where: { horainicio: { not: null } } }), "Hubo errores en la migración de cursos");
+    console.assert(await prisma.division.count() === await prisma.divisiones.count(), "Hubo errores en la migración de divisiones");
 
-    console.log("Verificación completa!");
+    console.log("¡Verificación completa!");
 }
 
 main()

@@ -62,6 +62,7 @@ async function main() {
     await prisma.$queryRawTyped(sql.insertLibro(admin));
 
     await prisma.$queryRawTyped(sql.insertMateria(admin));
+    await prisma.$queryRawTyped(sql.insertMateriaJefeTp());
     await prisma.$queryRawTyped(sql.insertLibroMateria(admin));
     await prisma.$queryRawTyped(sql.insertMateriaCorrelativa(admin));
 

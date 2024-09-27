@@ -6,7 +6,7 @@ update "public"."User" "user" set
     "codigoPostal" = "u"."codigo_postal",
     "departamento" = "u"."depto",
     "direccion" = "u"."direccion",
-    "fechaNacimiento" = "u"."date_nacimiento",
+    "fechaNacimiento" = case when "u"."date_nacimiento" < '1900-01-01' then null else "u"."date_nacimiento" end,
     "fechaRegistro" = "u"."date_registro",
     "fechaUltimaActualizacion" = coalesce("u"."date_ultima_actualizacion", now()),
     "fechaUltimoAcceso" = "u"."date_ultimo_acceso",

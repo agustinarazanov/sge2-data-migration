@@ -690,12 +690,12 @@ model Account {
   refresh_token            String?
   access_token             String?
   expires_at               Int?
+  refresh_expires_in       Int?
   token_type               String?
   scope                    String?
   id_token                 String?
   session_state            String?
   refresh_token_expires_in Int?
-  refresh_expires_in       Int?
   User                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
@@ -726,18 +726,18 @@ model Curso {
   duracion2                 String?
   dia1                      CursoDia
   dia2                      CursoDia?
+  profesorId                String
   anioDeCarrera             Int
   activo                    Boolean
   ac                        String
   sedeId                    Int
   materiaId                 Int
   divisionId                Int
+  turno                     TurnoCurso
   fechaCreacion             DateTime                    @default(now())
   fechaModificacion         DateTime                    @default(now())
   usuarioCreadorId          String
   usuarioModificadorId      String
-  turno                     TurnoCurso
-  profesorId                String
   Division                  Division                    @relation(fields: [divisionId], references: [id], onDelete: Cascade)
   Materia                   Materia                     @relation(fields: [materiaId], references: [id], onDelete: Cascade)
   User                      User                        @relation(fields: [profesorId], references: [id], onDelete: Cascade)
@@ -755,8 +755,8 @@ model CursoAyudante {
   cursoId              Int
   userId               String
   fechaCreacion        DateTime @default(now())
-  fechaModificacion    DateTime @default(now())
   usuarioCreadorId     String
+  fechaModificacion    DateTime @default(now())
   usuarioModificadorId String
   Curso                Curso    @relation(fields: [cursoId], references: [id], onDelete: Cascade)
   User                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -801,11 +801,11 @@ model Equipo {
   armarioId                       Int?
   estanteId                       Int?
   estadoId                        Int
+  disponible                      Boolean                           @default(true)
   fechaCreacion                   DateTime                          @default(now())
   fechaModificacion               DateTime                          @default(now())
   usuarioCreadorId                String
   usuarioModificadorId            String
-  disponible                      Boolean                           @default(true)
   Armario                         Armario?                          @relation(fields: [armarioId], references: [id], onDelete: Restrict)
   EquipoEstado                    EquipoEstado                      @relation(fields: [estadoId], references: [id])
   Estante                         Estante?                          @relation(fields: [estanteId], references: [id], onDelete: Restrict)
@@ -858,11 +858,11 @@ model EquipoTipo {
 model Estante {
   id                   Int      @id @default(autoincrement())
   nombre               String
+  armarioId            Int
   fechaCreacion        DateTime @default(now())
   fechaModificacion    DateTime @default(now())
   usuarioCreadorId     String
   usuarioModificadorId String
-  armarioId            Int
   Equipo               Equipo[]
   Armario              Armario  @relation(fields: [armarioId], references: [id], onDelete: Cascade)
   Libro                Libro[]
@@ -874,13 +874,13 @@ model Laboratorio {
   id                        Int                         @id @default(autoincrement())
   nombre                    String
   tienePc                   Boolean                     @default(false)
+  esReservable              Boolean                     @default(false)
   laboratorioAbiertoTipo    LaboratorioAbiertoTipo?
   sedeId                    Int
   fechaCreacion             DateTime                    @default(now())
   fechaModificacion         DateTime                    @default(now())
   usuarioCreadorId          String
   usuarioModificadorId      String
-  esReservable              Boolean                     @default(false)
   Armario                   Armario[]
   Equipo                    Equipo[]
   Sede                      Sede                        @relation(fields: [sedeId], references: [id], onDelete: Cascade)
@@ -910,11 +910,11 @@ model Libro {
   idiomaId             Int
   editorialId          Int
   sedeId               Int
+  disponible           Boolean        @default(true)
   fechaCreacion        DateTime       @default(now())
   fechaModificacion    DateTime       @default(now())
   usuarioCreadorId     String
   usuarioModificadorId String
-  disponible           Boolean        @default(true)
   Armario              Armario?       @relation(fields: [armarioId], references: [id], onDelete: Restrict)
   LibroAutor           LibroAutor     @relation(fields: [autorId], references: [id])
   LibroEditorial       LibroEditorial @relation(fields: [editorialId], references: [id])
@@ -985,7 +985,6 @@ model Materia {
   duracion                                                             MateriaDuracion
   tipo                                                                 MateriaTipo
   directorUsuarioId                                                    String?
-  jefeTrabajoPracticoUsuarioId                                         String?
   fechaCreacion                                                        DateTime             @default(now())
   fechaModificacion                                                    DateTime             @default(now())
   usuarioCreadorId                                                     String
@@ -993,9 +992,9 @@ model Materia {
   Curso                                                                Curso[]
   LibroMateria                                                         LibroMateria[]
   User_Materia_directorUsuarioIdToUser                                 User?                @relation("Materia_directorUsuarioIdToUser", fields: [directorUsuarioId], references: [id])
-  User_Materia_jefeTrabajoPracticoUsuarioIdToUser                      User?                @relation("Materia_jefeTrabajoPracticoUsuarioIdToUser", fields: [jefeTrabajoPracticoUsuarioId], references: [id])
   MateriaCorrelativa_MateriaCorrelativa_correlativaIdToMateria         MateriaCorrelativa[] @relation("MateriaCorrelativa_correlativaIdToMateria")
   MateriaCorrelativa_MateriaCorrelativa_materiaPrerequisitoIdToMateria MateriaCorrelativa[] @relation("MateriaCorrelativa_materiaPrerequisitoIdToMateria")
+  MateriaJefeTp                                                        MateriaJefeTp[]
 
   @@index([anio])
   @@index([duracion])
@@ -1065,20 +1064,20 @@ model Reserva {
   fechaHoraInicio                       DateTime
   fechaHoraFin                          DateTime
   tipo                                  ReservaTipo
-  usuarioCreadorId                      String
-  usuarioModificadorId                  String
-  usuarioTutorId                        String?
-  fechaCreacion                         DateTime                   @default(now())
-  fechaModificacion                     DateTime
-  fechaAprobacion                       DateTime?
-  fechaRechazo                          DateTime?
-  fechaRenovacion                       DateTime?
+  usuarioSolicitoId                     String
   usuarioAprobadorId                    String
   usuarioRechazadoId                    String?
   usuarioRenovoId                       String?
-  usuarioSolicitoId                     String
-  fechaRecibido                         DateTime?
   usuarioRecibioId                      String?
+  usuarioTutorId                        String?
+  fechaRenovacion                       DateTime?
+  fechaAprobacion                       DateTime?
+  fechaRechazo                          DateTime?
+  fechaRecibido                         DateTime?
+  usuarioCreadorId                      String
+  usuarioModificadorId                  String
+  fechaCreacion                         DateTime                   @default(now())
+  fechaModificacion                     DateTime
   User_Reserva_usuarioAprobadorIdToUser User                       @relation("Reserva_usuarioAprobadorIdToUser", fields: [usuarioAprobadorId], references: [id])
   User_Reserva_usuarioRechazadoIdToUser User?                      @relation("Reserva_usuarioRechazadoIdToUser", fields: [usuarioRechazadoId], references: [id], onDelete: Restrict)
   User_Reserva_usuarioRecibioIdToUser   User?                      @relation("Reserva_usuarioRecibioIdToUser", fields: [usuarioRecibioId], references: [id], onDelete: Restrict)
@@ -1285,52 +1284,52 @@ model Tutor {
 }
 
 model User {
-  id                                                 String          @id @default(cuid())
-  name                                               String?
-  email                                              String?         @unique
-  emailVerified                                      DateTime?
-  image                                              String?         @default("/default-avatar.svg")
-  apellido                                           String?
-  ciudad                                             String?
-  codigoPostal                                       String?
-  departamento                                       String?
-  direccion                                          String?
-  documentoNumero                                    String?
-  documentoTipoId                                    Int?
-  fechaNacimiento                                    DateTime?
-  fechaRegistro                                      DateTime        @default(now())
-  fechaUltimaActualizacion                           DateTime        @default(now())
-  fechaUltimoAcceso                                  DateTime        @default(now())
-  gitlab                                             String?
-  legajo                                             String?
-  paisIso                                            String?
-  penalizaciones                                     Int             @default(0)
-  piso                                               String?
-  provinciaIso                                       String?
-  sexo                                               Boolean         @default(false)
-  telefonoCasa                                       String?
-  telefonoCelular                                    String?
-  telefonoLaboral                                    String?
-  nombre                                             String?
-  esDocente                                          Boolean         @default(false)
-  esTutor                                            Boolean         @default(false)
-  Account                                            Account[]
-  Curso                                              Curso[]
-  CursoAyudante                                      CursoAyudante[]
-  Materia_Materia_directorUsuarioIdToUser            Materia[]       @relation("Materia_directorUsuarioIdToUser")
-  Materia_Materia_jefeTrabajoPracticoUsuarioIdToUser Materia[]       @relation("Materia_jefeTrabajoPracticoUsuarioIdToUser")
-  Reserva_Reserva_usuarioAprobadorIdToUser           Reserva[]       @relation("Reserva_usuarioAprobadorIdToUser")
-  Reserva_Reserva_usuarioRechazadoIdToUser           Reserva[]       @relation("Reserva_usuarioRechazadoIdToUser")
-  Reserva_Reserva_usuarioRecibioIdToUser             Reserva[]       @relation("Reserva_usuarioRecibioIdToUser")
-  Reserva_Reserva_usuarioRenovoIdToUser              Reserva[]       @relation("Reserva_usuarioRenovoIdToUser")
-  Reserva_Reserva_usuarioSolicitoIdToUser            Reserva[]       @relation("Reserva_usuarioSolicitoIdToUser")
-  Reserva_Reserva_usuarioTutorIdToUser               Reserva[]       @relation("Reserva_usuarioTutorIdToUser")
-  Session                                            Session[]
-  Tutor                                              Tutor?
-  DocumentoTipo                                      DocumentoTipo?  @relation(fields: [documentoTipoId], references: [id], onDelete: Restrict)
-  Pais                                               Pais?           @relation(fields: [paisIso], references: [iso], onDelete: Restrict)
-  Provincia                                          Provincia?      @relation(fields: [provinciaIso, paisIso], references: [iso, paisIso], onDelete: Restrict)
-  UsuarioRol                                         UsuarioRol[]
+  id                                       String          @id @default(cuid())
+  name                                     String?
+  email                                    String?         @unique
+  emailVerified                            DateTime?
+  image                                    String?         @default("/default-avatar.svg")
+  nombre                                   String?
+  apellido                                 String?
+  fechaNacimiento                          DateTime?
+  sexo                                     Boolean         @default(false)
+  direccion                                String?
+  piso                                     String?
+  departamento                             String?
+  ciudad                                   String?
+  codigoPostal                             String?
+  telefonoCasa                             String?
+  telefonoCelular                          String?
+  telefonoLaboral                          String?
+  documentoNumero                          String?
+  legajo                                   String?
+  gitlab                                   String?
+  penalizaciones                           Int             @default(0)
+  esDocente                                Boolean         @default(false)
+  esTutor                                  Boolean         @default(false)
+  fechaRegistro                            DateTime        @default(now())
+  fechaUltimoAcceso                        DateTime        @default(now())
+  fechaUltimaActualizacion                 DateTime        @default(now())
+  documentoTipoId                          Int?
+  provinciaIso                             String?
+  paisIso                                  String?
+  Account                                  Account[]
+  Curso                                    Curso[]
+  CursoAyudante                            CursoAyudante[]
+  Materia_Materia_directorUsuarioIdToUser  Materia[]       @relation("Materia_directorUsuarioIdToUser")
+  MateriaJefeTp                            MateriaJefeTp[]
+  Reserva_Reserva_usuarioAprobadorIdToUser Reserva[]       @relation("Reserva_usuarioAprobadorIdToUser")
+  Reserva_Reserva_usuarioRechazadoIdToUser Reserva[]       @relation("Reserva_usuarioRechazadoIdToUser")
+  Reserva_Reserva_usuarioRecibioIdToUser   Reserva[]       @relation("Reserva_usuarioRecibioIdToUser")
+  Reserva_Reserva_usuarioRenovoIdToUser    Reserva[]       @relation("Reserva_usuarioRenovoIdToUser")
+  Reserva_Reserva_usuarioSolicitoIdToUser  Reserva[]       @relation("Reserva_usuarioSolicitoIdToUser")
+  Reserva_Reserva_usuarioTutorIdToUser     Reserva[]       @relation("Reserva_usuarioTutorIdToUser")
+  Session                                  Session[]
+  Tutor                                    Tutor?
+  DocumentoTipo                            DocumentoTipo?  @relation(fields: [documentoTipoId], references: [id], onDelete: Restrict)
+  Pais                                     Pais?           @relation(fields: [paisIso], references: [iso], onDelete: Restrict)
+  Provincia                                Provincia?      @relation(fields: [provinciaIso, paisIso], references: [iso, paisIso], onDelete: Restrict)
+  UsuarioRol                               UsuarioRol[]
 
   @@index([apellido])
   @@index([email])
@@ -1358,6 +1357,16 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+  @@schema("public")
+}
+
+model MateriaJefeTp {
+  materiaId                    Int
+  jefeTrabajoPracticoUsuarioId String
+  User                         User    @relation(fields: [jefeTrabajoPracticoUsuarioId], references: [id], onDelete: Cascade)
+  Materia                      Materia @relation(fields: [materiaId], references: [id], onDelete: Cascade)
+
+  @@id([materiaId, jefeTrabajoPracticoUsuarioId])
   @@schema("public")
 }
 

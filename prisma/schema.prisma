@@ -847,6 +847,7 @@ model EquipoMarca {
 model EquipoTipo {
   id               Int      @id @default(autoincrement())
   nombre           String
+  imagen           String?
   fechaCreacion    DateTime @default(now())
   usuarioCreadorId String
   Equipo           Equipo[]

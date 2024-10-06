@@ -31,10 +31,10 @@
     "target" : {
         "host"     : "127.0.0.1",
         "port"     : 5432,
-        "database" : "sample_stuff",
+        "database" : "sge2",
         "charset"  : "UTF8",
         "user"     : "postgres",
-        "password" : "0123456789"
+        "password" : "password"
     },
 
     "max_each_db_connection_pool_size_description" : [

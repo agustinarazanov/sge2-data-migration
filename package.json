@@ -17,6 +17,7 @@
         "@types/pg": "8.11.8",
         "@types/pg-copy-streams": "1.2.5",
         "@types/uuid": "10.0.0",
+        "csv-parser": "^3.0.0",
         "json2csv": "5.0.7",
         "mysql2": "3.11.0",
         "pg": "8.12.0",

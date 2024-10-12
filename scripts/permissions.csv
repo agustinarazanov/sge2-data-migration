@@ -1,0 +1,112 @@
+﻿bit;grupo;nombre;enDesuso
+0;;;
+1;Reserva de laboratorio;Reservar laboratorio docente para un curso (Automático del Sistema);FALSE
+2;Reserva de laboratorio;Ver reservas confirmadas para un curso (Automático del Sistema);FALSE
+3;Reserva de laboratorio;Realizar reserva discrecional;FALSE
+4;Reserva de laboratorio;Confirmar reservas;FALSE
+5;Reserva de laboratorio;Ver totalidad de reservas confirmadas + Pasadas + Rechazadas;FALSE
+6;Reserva de laboratorio;Ver reservas confirmadas generales para docentes;FALSE
+7;Reserva de laboratorio;Reservar laboratorio docente para la cátedra (Automático del Sistema);FALSE
+8;Reserva de laboratorio;Ver reservas confirmadas para la cátedra;FALSE
+9;Aplicaciones;Ver listado;FALSE
+10;;;
+11;Aplicaciones;Agregar + Editar + Eliminar;FALSE
+12;Aplicaciones;Cargar Práctica (Automático del sistema);FALSE
+13;Laboratorio abierto;Reservar;FALSE
+14;Laboratorio abierto;Ver mis reservas actuales y pasadas;FALSE
+15;Laboratorio abierto;Ver planilla de tutores y horarios;FALSE
+16;Laboratorio abierto;Confirmar Reservas;FALSE
+17;;;
+18;;;
+19;Laboratorio abierto;Suspender alumno;FALSE
+20;Laboratorio abierto;Des-suspender alumno;FALSE
+21;;;
+22;Laboratorio abierto;Tutores -> Agregar + Editar + Eliminar;FALSE
+23;;;
+24;;;
+25;Materias;Agregar + Editar + Eliminar;FALSE
+26;Materias;Ver listado de materias;FALSE
+27;Materias;Administrar Correlativa;FALSE
+28;Cursos;Mostrar todos;FALSE
+29;Cursos;Agregar + Editar + Eliminar;FALSE
+30;Cursos;"Ver ""Mis Cursos"" (Automático del Sistema)";FALSE
+31;;;
+32;;;
+33;Divisiones;Agregar + Editar + Eliminar;FALSE
+34;Divisiones;Ver Listado de Divisiones creadas;FALSE
+35;;;
+36;;;
+37;Armarios;Agregar + Editar + Eliminar;FALSE
+38;;;
+39;Estantes;Agregar + Editar + Eliminar;FALSE
+40;;;
+41;Equipos;Agregar + Editar + Eliminar;FALSE
+42;Equipos;Ver listado de equipos;FALSE
+43;Equipos;Buscar equipo;FALSE
+44;Equipos;Reporte por armario;FALSE
+45;Equipos;Reporte por tipo;FALSE
+46;Equipos;Admin: Puede ver la ubicación de los Equipos;FALSE
+47;Equipos;Reporte por laboratorio;FALSE
+48;Equipos;Agregar + Editar + Eliminar Manuales;FALSE
+49;;;
+50;Equipos préstamo;Prestar;FALSE
+51;Equipos préstamo;Ver Préstamos activos y finalizados;FALSE
+52;Equipos préstamo;"Ver ""Mis préstamos activos y finalizados""";FALSE
+53;;;
+54;;;
+55;;;
+56;Equipos tipo;Agregar + Editar + Eliminar;FALSE
+57;;;
+58;Biblioteca;Agregar + Editar + Eliminar Libro;FALSE
+59;Biblioteca;Ver listado de libros;FALSE
+60;Biblioteca;Buscar libro;FALSE
+61;Biblioteca;Puede ver detalles del libro;FALSE
+62;;;
+63;Biblioteca;Editoriales: Puede agregar, editar y Eliminar.;FALSE
+64;Biblioteca préstamo;Prestar;FALSE
+65;Biblioteca préstamo;Ver préstamos activos y finalizados;FALSE
+66;Biblioteca préstamo;"Ver ""Mis préstamos activos y finalizados""";FALSE
+67;;;
+68;;;
+69;Convenio electrocomponentes;Requerir certificado;TRUE
+70;Convenio electrocomponentes;Ver detalles del convenio;TRUE
+71;Convenio electrocomponentes;Administrar certificados pedidos;TRUE
+72;Convenio electrocomponentes;Eliminar certificado;TRUE
+73;;;
+74;;;
+75;;;
+76;Convenio Mayer;Requerir certificado;TRUE
+77;Convenio Mayer;"Ver ""Mis pedidos actuales y pasados""";TRUE
+78;;;
+79;Convenio Mayer;Enviar resumen a Mayer;TRUE
+80;Convenio Mayer;Administrar pedidos para Mayer;TRUE
+81;;;
+82;;;
+83;Reporte fallas;Buscar Reportes de Fallas;FALSE
+84;Reporte fallas;Reportar Fallas de Pc/s e Instrumental;FALSE
+85;Reporte fallas;Administrar Reportes de Fallas;FALSE
+86;Actividades para el usuario SGE;Publicar y Administrar;FALSE
+87;Actividades para el usuario SGE;Ver publicaciones;FALSE
+88;;;
+89;;;
+90;Actividades abiertas;Publicar y Administrar;FALSE
+91;Actividades abiertas;Ver publicaciones;FALSE
+92;;;
+93;Administrador;Puede actualizar el acta de consejeros;FALSE
+94;Administrador;Modificar Atributos;FALSE
+95;Administrador;Modificar Atributos de Administración;FALSE
+96;Administrador;Ver Panel Control Administrador;FALSE
+97;Administrador;El usuario pertenece al grupo Tutor;FALSE
+98;Administrador;El usuario pertenece al grupo Docente;FALSE
+99;Administrador;El usuario pertenece al grupo Consejero Departamental;FALSE
+100;Administrador;"Puede ver los resultados de los votos de acta (ex- ""puede ver la encuesta docente"")";FALSE
+101;Administrador;El usuario pertenece al grupo Pañol;FALSE
+102;Administrador;El usuario pertenece al grupo Alumno;FALSE
+103;Administrador;Puede ver notificaciones en el índex principal;FALSE
+104;;;
+105;Administrador;Acceso al SVN;FALSE
+106;Administrador;Ver Ficha Usuario;FALSE
+107;Administrador;Agregar Usuarios a Grupos;FALSE
+108;Administrador;Ofertas Laborales: Agregar / Eliminar -- Ahora --> INSCRIPCIONES ESPECIALES;FALSE
+109;Administrador;El usuario pertenece al grupo Administrador Web;FALSE
+110;Reserva de laboratorio;Agregar y Eliminar de pantalla;FALSE

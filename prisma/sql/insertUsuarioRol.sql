@@ -1,5 +1,6 @@
 insert into "public"."UsuarioRol" ("userId", "rolId", "usuarioCreadorId")
-values
-($1, 1, $1),
-($2, 2, $1),
-($3, 3, $1);
+select "userId", "rol"."id", $1
+from "public"."Rol" "rol"
+join "public"."Permiso" "permiso" on "rol"."nombre" = split_part("permiso"."nombre", 'grupo ', 2)
+join "public"."UsuarioPermiso" "up" on "permiso"."id" = "up"."permisoId"
+where "permiso"."nombre" like '%pertenece al grupo%';

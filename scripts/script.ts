@@ -1,47 +1,74 @@
-import { PrismaClient } from "@prisma/client";
-import * as sql from "@prisma/client/sql";
+import { PrismaClient } from '@prisma/client';
+import * as sql from '@prisma/client/sql';
+import * as fs from 'fs';
+import csv = require('csv-parser');
 
 const prisma = new PrismaClient();
 
 async function main() {
-    console.log("Comenzando migración...");
+    console.log('Comenzando migración...');
 
     await prisma.$queryRawTyped(sql.insertDocumentoTipo());
     await prisma.$queryRawTyped(sql.insertPais());
     await prisma.$queryRawTyped(sql.insertProvincia());
 
-    const userdata = await prisma.$queryRawTyped(sql.selectUserdata());
-    await prisma.user.createMany({ data: userdata.map((u) => ({ email: u.email })) });
+    type UserData = { email: string; id?: string; usuario_id: bigint; atributo: string };
+    const userdata: UserData[] = (await prisma.$queryRawTyped(sql.selectUserdata())).map(u => ({
+        ...u,
+        atributo: u.atributo
+            .split(',')
+            .map(v => parseInt(v, 16).toString(2).padStart(4, '0'))
+            .join(''),
+    }));
+
+    for (const u of userdata) {
+        const { id } = await prisma.user.create({
+            data: {
+                email: u.email,
+            },
+        });
+        u.id = id;
+    }
+
     await prisma.$queryRawTyped(sql.updateUser());
+    const admin = userdata.find(u => Number(u.usuario_id) === 3571)?.id ?? '';
+    const permissions: Record<string, number> = {};
+    const promises: Promise<void>[] = [];
 
-    const admin =
-        (
-            await prisma.user.findFirst({
-                select: { id: true },
-                where: { email: userdata.find((u) => Number(u.usuario_id) === 3571)?.email },
-            })
-        )?.id ?? "";
-
-    const ayudante =
-        (
-            await prisma.user.findFirst({
-                select: { id: true },
-                where: { email: userdata.find((u) => Number(u.usuario_id) === 3849)?.email },
-            })
-        )?.id ?? "";
-
-    const alumno =
-        (
-            await prisma.user.create({
-                data: {
-                    email: "alumno@frba.utn.edu.ar",
-                    nombre: "Alumno",
-                    apellido: "Anónimo",
-                    legajo: "123456",
-                    name: "alumno",
-                },
-            })
-        ).id ?? "";
+    fs.createReadStream('./scripts/permissions.csv')
+        .pipe(csv({ separator: ';', mapHeaders: ({ header }) => header.trim() }))
+        .on('data', async data => {
+            if (!data.grupo || !data.nombre) return;
+            const promise = prisma.permiso
+                .create({
+                    data: {
+                        grupo: data.grupo,
+                        nombre: data.nombre,
+                        enDesuso: data.enDesuso === 'TRUE',
+                        usuarioCreadorId: admin,
+                        usuarioModificadorId: admin,
+                    },
+                })
+                .then(permission => {
+                    permissions[data.bit] = permission.id;
+                });
+            promises.push(promise);
+        })
+        .on('end', async () => {
+            await Promise.all(promises);
+            for (const u of userdata) {
+                Array.from(u.atributo).forEach(async (bit, i) => {
+                    if (bit === '1' && permissions[i] && u.id) {
+                        await prisma.$queryRawTyped(
+                            sql.insertUsuarioPermiso(u.id, permissions[i], admin),
+                        );
+                    }
+                });
+            }
+            await prisma.$queryRawTyped(sql.insertRol(admin));
+            await prisma.$queryRawTyped(sql.insertUsuarioRol(admin));
+            await prisma.$queryRawTyped(sql.insertRolPermiso(admin));
+        });
 
     await prisma.$queryRawTyped(sql.insertSede());
     await prisma.$queryRawTyped(sql.insertLaboratorio(admin));
@@ -69,16 +96,6 @@ async function main() {
     await prisma.$queryRawTyped(sql.insertDivision(admin));
     await prisma.$queryRawTyped(sql.insertCurso(admin));
     await prisma.$queryRawTyped(sql.insertCursoAyudante(admin));
-
-    await prisma.$queryRawTyped(sql.insertPermiso(admin));
-    await prisma.$queryRawTyped(sql.insertRol(admin));
-    await prisma.$queryRawTyped(sql.insertUsuarioRol(admin, ayudante, alumno));
-
-    await prisma.$queryRawTyped(sql.insertRolPermisoAdministrador(admin));
-    await prisma.$queryRawTyped(sql.insertRolPermisoDocente(admin));
-    await prisma.$queryRawTyped(sql.insertRolPermisoAlumno(admin));
-    await prisma.$queryRawTyped(sql.insertRolPermisoPanolero(admin));
-    await prisma.$queryRawTyped(sql.insertRolPermisoSecretario(admin));
 
     await prisma.$queryRawTyped(sql.updateLibro1());
     await prisma.$queryRawTyped(sql.updateLibro2());
@@ -127,23 +144,39 @@ async function main() {
     await prisma.$queryRawTyped(sql.updateEquipo3());
     await prisma.$queryRawTyped(sql.updateEquipo4());
 
-    console.log("¡Migración completa!");
-    console.log("Verificando datos...");
+    console.log('¡Migración completa!');
+    console.log('Verificando datos...');
 
-    console.assert(await prisma.libro.count() === await prisma.libros.count(), "Hubo errores en la migración de libros");
-    console.assert(await prisma.materia.count() === await prisma.materias.count(), "Hubo errores en la migración de materias");
-    console.assert(await prisma.equipo.count() === await prisma.equipos.count(), "Hubo errores en la migración de equipos");
-    console.assert(await prisma.curso.count() === await prisma.cursos.count({ where: { horainicio: { not: null } } }), "Hubo errores en la migración de cursos");
-    console.assert(await prisma.division.count() === await prisma.divisiones.count(), "Hubo errores en la migración de divisiones");
+    console.assert(
+        (await prisma.libro.count()) === (await prisma.libros.count()),
+        'Hubo errores en la migración de libros',
+    );
+    console.assert(
+        (await prisma.materia.count()) === (await prisma.materias.count()),
+        'Hubo errores en la migración de materias',
+    );
+    console.assert(
+        (await prisma.equipo.count()) === (await prisma.equipos.count()),
+        'Hubo errores en la migración de equipos',
+    );
+    console.assert(
+        (await prisma.curso.count()) ===
+            (await prisma.cursos.count({ where: { horainicio: { not: null } } })),
+        'Hubo errores en la migración de cursos',
+    );
+    console.assert(
+        (await prisma.division.count()) === (await prisma.divisiones.count()),
+        'Hubo errores en la migración de divisiones',
+    );
 
-    console.log("¡Verificación completa!");
+    console.log('¡Verificación completa!');
 }
 
 main()
     .then(async () => {
         await prisma.$disconnect();
     })
-    .catch(async (e) => {
+    .catch(async e => {
         console.error(e);
         await prisma.$disconnect();
         process.exit(1);

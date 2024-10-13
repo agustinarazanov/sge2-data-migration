@@ -1,4 +1,3 @@
 insert into "RolPermiso" ("rolId", "permisoId", "usuarioCreadorId")
-select distinct "rol"."rolId", "permiso"."permisoId", $1
-from "UsuarioRol" "rol"
-join "UsuarioPermiso" "permiso" on "rol"."userId" = "permiso"."userId";
+select "rol"."id", "permiso"."id", $1
+from "Permiso" "permiso", "Rol" "rol";

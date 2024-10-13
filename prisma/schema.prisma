@@ -374,7 +374,6 @@ model Permiso {
   usuarioCreadorId     String
   usuarioModificadorId String
   RolPermiso           RolPermiso[]
-  UsuarioPermiso       UsuarioPermiso[]
 
   @@unique([nombre, grupo])
   @@index([nombre])
@@ -672,7 +671,6 @@ model User {
   DocumentoTipo                            DocumentoTipo?   @relation(fields: [documentoTipoId], references: [id], onDelete: Restrict)
   Pais                                     Pais?            @relation(fields: [paisIso], references: [iso], onDelete: Restrict)
   Provincia                                Provincia?       @relation(fields: [provinciaIso, paisIso], references: [iso, paisIso], onDelete: Restrict)
-  UsuarioPermiso                           UsuarioPermiso[]
   UsuarioRol                               UsuarioRol[]
 
   @@index([apellido])
@@ -680,18 +678,6 @@ model User {
   @@index([name])
   @@index([legajo], map: "usuario_legajo_asc_idx")
   @@index([legajo], map: "usuario_legajo_hash_idx", type: Hash)
-  @@schema("public")
-}
-
-model UsuarioPermiso {
-  userId           String
-  permisoId        Int
-  fechaCreacion    DateTime @default(now())
-  usuarioCreadorId String
-  Permiso          Permiso  @relation(fields: [permisoId], references: [id], onDelete: Cascade)
-  User             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([userId, permisoId])
   @@schema("public")
 }
 

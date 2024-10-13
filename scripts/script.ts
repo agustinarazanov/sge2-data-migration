@@ -12,35 +12,49 @@ async function main() {
     await prisma.$queryRawTyped(sql.insertPais());
     await prisma.$queryRawTyped(sql.insertProvincia());
 
-    type UserData = { email: string; id?: string; usuario_id: bigint; atributo: string };
-    const userdata: UserData[] = (await prisma.$queryRawTyped(sql.selectUserdata())).map(u => ({
-        ...u,
-        atributo: u.atributo
-            .split(',')
-            .map(v => parseInt(v, 16).toString(2).padStart(4, '0'))
-            .join(''),
-    }));
-
-    for (const u of userdata) {
-        const { id } = await prisma.user.create({
-            data: {
-                email: u.email,
-            },
-        });
-        u.id = id;
-    }
+    type UserData = { email: string; id: string; usuario_id: bigint; atributo: string };
+    const userdata: UserData[] = await Promise.all(
+        (await prisma.$queryRawTyped(sql.selectUserdata())).map(async u => {
+            const { id } = await prisma.user.create({
+                data: {
+                    email: u.email,
+                },
+            });
+            return {
+                ...u,
+                id,
+                atributo: u.atributo
+                    .split(',')
+                    .map(v => parseInt(v, 16).toString(2).padStart(4, '0'))
+                    .join(''),
+            };
+        }),
+    );
 
     await prisma.$queryRawTyped(sql.updateUser());
     const admin = userdata.find(u => Number(u.usuario_id) === 3571)?.id ?? '';
-    const permissions: Record<string, number> = {};
+    const roles: Record<string, number> = {};
     const promises: Promise<void>[] = [];
 
     fs.createReadStream('./scripts/permissions.csv')
         .pipe(csv({ separator: ';', mapHeaders: ({ header }) => header.trim() }))
         .on('data', async data => {
             if (!data.grupo || !data.nombre) return;
-            const promise = prisma.permiso
-                .create({
+            if (data.nombre.includes('grupo')) {
+                const promise = prisma.rol
+                    .create({
+                        data: {
+                            nombre: data.nombre.split('grupo ')[1],
+                            usuarioCreadorId: admin,
+                            usuarioModificadorId: admin,
+                        },
+                    })
+                    .then(role => {
+                        roles[data.bit] = role.id;
+                    });
+                promises.push(promise);
+            } else {
+                await prisma.permiso.create({
                     data: {
                         grupo: data.grupo,
                         nombre: data.nombre,
@@ -48,26 +62,19 @@ async function main() {
                         usuarioCreadorId: admin,
                         usuarioModificadorId: admin,
                     },
-                })
-                .then(permission => {
-                    permissions[data.bit] = permission.id;
                 });
-            promises.push(promise);
+            }
         })
         .on('end', async () => {
             await Promise.all(promises);
+            await prisma.$queryRawTyped(sql.insertRolPermiso(admin));
+
             for (const u of userdata) {
                 Array.from(u.atributo).forEach(async (bit, i) => {
-                    if (bit === '1' && permissions[i] && u.id) {
-                        await prisma.$queryRawTyped(
-                            sql.insertUsuarioPermiso(u.id, permissions[i], admin),
-                        );
-                    }
+                    if (bit === '1' && roles[i])
+                        await prisma.$queryRawTyped(sql.insertUsuarioRol(u.id, roles[i], admin));
                 });
             }
-            await prisma.$queryRawTyped(sql.insertRol(admin));
-            await prisma.$queryRawTyped(sql.insertUsuarioRol(admin));
-            await prisma.$queryRawTyped(sql.insertRolPermiso(admin));
         });
 
     await prisma.$queryRawTyped(sql.insertSede());

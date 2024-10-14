@@ -17,6 +17,7 @@ async function main() {
         (await prisma.$queryRawTyped(sql.selectUserdata())).map(async u => {
             const { id } = await prisma.user.create({
                 data: {
+                    name: u.email.split('@')[0],
                     email: u.email,
                 },
             });
@@ -33,6 +34,7 @@ async function main() {
 
     await prisma.$queryRawTyped(sql.updateUser());
     const admin = userdata.find(u => Number(u.usuario_id) === 3571)?.id ?? '';
+    await prisma.$queryRawTyped(sql.insertTutor(admin));
     const roles: Record<string, number> = {};
     const promises: Promise<void>[] = [];
 

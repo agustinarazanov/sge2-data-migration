@@ -1,8 +1,7 @@
 update "public"."User" "user" set
     "nombre" = "u"."nombre",
     "apellido" = "u"."apellido",
-    "name" = split_part("u"."email",  '@', 1),
-    "ciudad" = "u"."nacionalidad",
+    "ciudad" = "u"."ciudad",
     "codigoPostal" = "u"."codigo_postal",
     "departamento" = "u"."depto",
     "direccion" = "u"."direccion",
@@ -12,19 +11,20 @@ update "public"."User" "user" set
     "fechaUltimoAcceso" = "u"."date_ultimo_acceso",
     "documentoNumero" = "u"."documento_numero",
     "gitlab" = "u"."gitlab",
-    "legajo" = "u"."legajo",
+    "legajo" = case when "u"."legajo" ~ '\d' and "u"."legajo" !~ '^0+$' then regexp_replace("u"."legajo", '\D', '', 'g') end,
     "piso" = "u"."piso",
-    "sexo" = ("u"."sexo"::int)::boolean,
     "telefonoCasa" = "u"."telefono_casa",
     "telefonoCelular" = "u"."telefono_celular",
     "telefonoLaboral" = "u"."telefono_laboral",
     "documentoTipoId" = "documento"."id",
     "provinciaIso" = "provincia"."iso",
     "paisIso" = "pais"."iso",
-    "esDocente" = case when "c"."profesor_userid" is null then false else true end
+    "esDocente" = case when "c"."profesor_userid" is null then false else true end,
+    "esTutor" = case when "t"."userid" is null then false else true end
 from "old"."userdata" "u"
 left join "old"."documento" "d" on "d"."documento_id" = "u"."documento_tipo"
 left join "old"."cursos" "c" on "c"."profesor_userid"::int = "u"."usuario_id"
+left join "old"."lababierto_tutores" "t" on "u"."usuario_id" = "t"."userid"
 left join "public"."DocumentoTipo" "documento" on "documento"."nombre" = "d"."documento"
 left join "public"."Pais" "pais" on "nacionalidad" = "pais"."iso"
 left join "public"."Provincia" "provincia" on "provincia" = "provincia"."iso" and "pais"."iso" = "provincia"."paisIso"

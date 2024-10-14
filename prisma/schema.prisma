@@ -365,12 +365,12 @@ model Pais {
 }
 
 model Permiso {
-  id                   Int              @id @default(autoincrement())
+  id                   Int          @id @default(autoincrement())
   nombre               String
   grupo                String
-  enDesuso             Boolean          @default(false)
-  fechaCreacion        DateTime         @default(now())
-  fechaModificacion    DateTime         @default(now())
+  enDesuso             Boolean      @default(false)
+  fechaCreacion        DateTime     @default(now())
+  fechaModificacion    DateTime     @default(now())
   usuarioCreadorId     String
   usuarioModificadorId String
   RolPermiso           RolPermiso[]
@@ -615,7 +615,8 @@ model SoftwareLaboratorio {
 model Tutor {
   userId           String   @id @unique
   diasHorarios     String
-  sede             String
+  sede             String?
+  activo           Boolean
   especialidad     String
   fechaCreacion    DateTime @default(now())
   usuarioCreadorId String
@@ -626,15 +627,14 @@ model Tutor {
 }
 
 model User {
-  id                                       String           @id @default(cuid())
-  name                                     String?
-  email                                    String?          @unique
-  emailVerified                            DateTime?
-  image                                    String?          @default("/default-avatar.svg")
+  id                                       String          @id @default(cuid())
+  name                                     String
+  email                                    String          @unique
+  emailVerified                            Boolean?
+  image                                    String          @default("/default-avatar.svg")
   nombre                                   String?
   apellido                                 String?
-  fechaNacimiento                          DateTime?
-  sexo                                     Boolean          @default(false)
+  fechaNacimiento                          DateTime?       @db.Date
   direccion                                String?
   piso                                     String?
   departamento                             String?
@@ -644,39 +644,38 @@ model User {
   telefonoCelular                          String?
   telefonoLaboral                          String?
   documentoNumero                          String?
-  legajo                                   String?
+  legajo                                   String?         @unique(map: "usuario_legajo_asc_idx")
   gitlab                                   String?
-  penalizaciones                           Int              @default(0)
-  esDocente                                Boolean          @default(false)
-  esTutor                                  Boolean          @default(false)
-  fechaRegistro                            DateTime         @default(now())
-  fechaUltimoAcceso                        DateTime         @default(now())
-  fechaUltimaActualizacion                 DateTime         @default(now())
+  penalizaciones                           Int             @default(0)
+  esDocente                                Boolean         @default(false)
+  esTutor                                  Boolean         @default(false)
+  fechaRegistro                            DateTime        @default(now())
+  fechaUltimoAcceso                        DateTime        @default(now())
+  fechaUltimaActualizacion                 DateTime        @default(now())
   documentoTipoId                          Int?
   provinciaIso                             String?
   paisIso                                  String?
   Account                                  Account[]
   Curso                                    Curso[]
   CursoAyudante                            CursoAyudante[]
-  Materia_Materia_directorUsuarioIdToUser  Materia[]        @relation("Materia_directorUsuarioIdToUser")
+  Materia_Materia_directorUsuarioIdToUser  Materia[]       @relation("Materia_directorUsuarioIdToUser")
   MateriaJefeTp                            MateriaJefeTp[]
-  Reserva_Reserva_usuarioAprobadorIdToUser Reserva[]        @relation("Reserva_usuarioAprobadorIdToUser")
-  Reserva_Reserva_usuarioRechazadoIdToUser Reserva[]        @relation("Reserva_usuarioRechazadoIdToUser")
-  Reserva_Reserva_usuarioRecibioIdToUser   Reserva[]        @relation("Reserva_usuarioRecibioIdToUser")
-  Reserva_Reserva_usuarioRenovoIdToUser    Reserva[]        @relation("Reserva_usuarioRenovoIdToUser")
-  Reserva_Reserva_usuarioSolicitoIdToUser  Reserva[]        @relation("Reserva_usuarioSolicitoIdToUser")
-  Reserva_Reserva_usuarioTutorIdToUser     Reserva[]        @relation("Reserva_usuarioTutorIdToUser")
+  Reserva_Reserva_usuarioAprobadorIdToUser Reserva[]       @relation("Reserva_usuarioAprobadorIdToUser")
+  Reserva_Reserva_usuarioRechazadoIdToUser Reserva[]       @relation("Reserva_usuarioRechazadoIdToUser")
+  Reserva_Reserva_usuarioRecibioIdToUser   Reserva[]       @relation("Reserva_usuarioRecibioIdToUser")
+  Reserva_Reserva_usuarioRenovoIdToUser    Reserva[]       @relation("Reserva_usuarioRenovoIdToUser")
+  Reserva_Reserva_usuarioSolicitoIdToUser  Reserva[]       @relation("Reserva_usuarioSolicitoIdToUser")
+  Reserva_Reserva_usuarioTutorIdToUser     Reserva[]       @relation("Reserva_usuarioTutorIdToUser")
   Session                                  Session[]
   Tutor                                    Tutor?
-  DocumentoTipo                            DocumentoTipo?   @relation(fields: [documentoTipoId], references: [id], onDelete: Restrict)
-  Pais                                     Pais?            @relation(fields: [paisIso], references: [iso], onDelete: Restrict)
-  Provincia                                Provincia?       @relation(fields: [provinciaIso, paisIso], references: [iso, paisIso], onDelete: Restrict)
+  DocumentoTipo                            DocumentoTipo?  @relation(fields: [documentoTipoId], references: [id], onDelete: Restrict)
+  Pais                                     Pais?           @relation(fields: [paisIso], references: [iso], onDelete: Restrict)
+  Provincia                                Provincia?      @relation(fields: [provinciaIso, paisIso], references: [iso, paisIso], onDelete: Restrict)
   UsuarioRol                               UsuarioRol[]
 
   @@index([apellido])
   @@index([email])
   @@index([name])
-  @@index([legajo], map: "usuario_legajo_asc_idx")
   @@index([legajo], map: "usuario_legajo_hash_idx", type: Hash)
   @@schema("public")
 }

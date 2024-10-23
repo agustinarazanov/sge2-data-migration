@@ -19,11 +19,9 @@ update "public"."User" "user" set
     "documentoTipoId" = "documento"."id",
     "provinciaIso" = "provincia"."iso",
     "paisIso" = "pais"."iso",
-    "esDocente" = case when "c"."profesor_userid" is null then false else true end,
     "esTutor" = case when "t"."userid" is null then false else true end
 from "old"."userdata" "u"
 left join "old"."documento" "d" on "d"."documento_id" = "u"."documento_tipo"
-left join "old"."cursos" "c" on "c"."profesor_userid"::int = "u"."usuario_id"
 left join "old"."lababierto_tutores" "t" on "u"."usuario_id" = "t"."userid"
 left join "public"."DocumentoTipo" "documento" on "documento"."nombre" = "d"."documento"
 left join "public"."Pais" "pais" on "nacionalidad" = "pais"."iso"

@@ -105,6 +105,7 @@ async function main() {
     await prisma.$queryRawTyped(sql.insertDivision(admin));
     await prisma.$queryRawTyped(sql.insertCurso(admin));
     await prisma.$queryRawTyped(sql.insertCursoAyudante(admin));
+    await prisma.$queryRawTyped(sql.updateUserEsDocente());
 
     await prisma.$queryRawTyped(sql.updateLibro1());
     await prisma.$queryRawTyped(sql.updateLibro2());

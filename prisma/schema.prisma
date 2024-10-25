@@ -95,7 +95,7 @@ model CursoAyudante {
 
 model Division {
   id                   Int      @id @default(autoincrement())
-  nombre               String
+  nombre               String   @unique
   anio                 Int
   fechaCreacion        DateTime @default(now())
   usuarioCreadorId     String
@@ -630,7 +630,7 @@ model Tutor {
 
 model User {
   id                                       String          @id @default(cuid())
-  name                                     String
+  name                                     String          @unique
   email                                    String          @unique
   emailVerified                            Boolean?
   image                                    String          @default("/default-avatar.svg")
@@ -1386,13 +1386,14 @@ model usuarios_pendientes {
 }
 
 model Mails {
-  id         Int      @unique
+  id         Int      @unique @default(autoincrement())
   emisor     String
   para       String
   cc         String
   cco        String
-  contenido  String
-  fechaEnvio DateTime
+  fechaEnvio DateTime @default(now())
+  asunto     String
+  contenido  Json
 
   @@schema("public")
 }

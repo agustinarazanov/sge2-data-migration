@@ -1,5 +1,5 @@
 insert into "public"."Curso" ("horaInicio1", "duracion1", "horaInicio2", "duracion2", "dia1", "dia2", "anioDeCarrera", "activo", "ac", "sedeId", "materiaId", "divisionId", "turno", "profesorId", "usuarioCreadorId", "usuarioModificadorId")
-select "horainicio", "c"."duracion", "horainicio2", "duracion2", upper(replace(replace("dia1"."dia", 'é', 'e'), 'á', 'a'))::"CursoDia", upper(replace(replace("dia2"."dia", 'é', 'e'), 'á', 'a'))::"CursoDia", "c"."anio", ("activo"::int)::boolean, "AC", "sede"."id", "materia"."id", "division"."id", upper(replace("turno", 'ñ', 'n'))::"TurnoCurso", "user"."id", $1, $1
+select "horainicio", "c"."duracion", nullif("horainicio2", ''), nullif("duracion2", ''), upper(replace(replace("dia1"."dia", 'é', 'e'), 'á', 'a'))::"CursoDia", upper(replace(replace(nullif("dia2"."dia", ''), 'é', 'e'), 'á', 'a'))::"CursoDia", "c"."anio", ("activo"::int)::boolean, "AC", "sede"."id", "materia"."id", "division"."id", upper(replace("turno", 'ñ', 'n'))::"TurnoCurso", "user"."id", $1, $1
 from "old"."cursos" "c"
 join "old"."userdata" "u" on "u"."usuario_id" = "c"."profesor_userid"::int
 join "old"."sedes" "s" on "c"."sede_id" = "s"."sede_id"

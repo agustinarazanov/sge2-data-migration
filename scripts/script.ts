@@ -58,6 +58,7 @@ async function main() {
             } else {
                 await prisma.permiso.create({
                     data: {
+                        sgeNombre: data.sgeNombre,
                         grupo: data.grupo,
                         nombre: data.nombre,
                         enDesuso: data.enDesuso === 'TRUE',

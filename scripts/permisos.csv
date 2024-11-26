@@ -1,0 +1,84 @@
+﻿rubro;nombre;incluido;sgeNombre
+Administrador;Realizar Querys y Cambiar de Usuario;FALSE;ADMIN_QUERY
+Administrador;Modificar Atributos;TRUE;ADMIN_MODIFICAR_ATRIBUTOS
+Administrador;Modificar Atributos de Administración;TRUE;ADMIN_MODIFICAR_ATRIBUTOS_ADMIN
+Administrador;Ver Panel Control Administrador;TRUE;ADMIN_VER_PANEL_ADMIN
+Administrador;Administrar Usuarios;TRUE;ADMIN_ABM_USUARIOS
+Administrador;El usuario pertenece al grupo Alumno;FALSE;ADMIN_ES_ALUMNO
+Administrador;El usuario pertenece al grupo Docente;FALSE;ADMIN_ES_DOCENTE
+Administrador;Acceso al SVN;FALSE;ADMIN_ACCESO_SVN
+Administrador;El usuario pertenece al grupo Tutor;FALSE;ADMIN_ES_TUTOR
+Administrador;El usuario pertenece al grupo Pañol;FALSE;ADMIN_ES_PANOL
+Administrador;El usuario pertenece al grupo Consejero Departamental;FALSE;ADMIN_ES_CONSEJERO
+Administrador;El usuario pertenece al grupo Administrador Web;TRUE;ADMIN_ES_ADMINISTRADOR_WEB
+Administrador;Puede actualizar el acta de consejeros;FALSE;ADMIN_ACTUALIZAR_ACTA_CONSEJEROS
+Administrador;Puede ver la encuesta docente (Solo Consejeros);FALSE;ADMIN_VER_RESULTADOS_ACTA
+Administrador;Puede ver notificaciones en el index principal;FALSE;ADMIN_VER_NOTIFICACIONES_INDEX
+Administrador;Ver Ficha Usuario;TRUE;ADMIN_VER_FICHA_USUARIO
+Administrador;Agregar Usuarios a Grupos;TRUE;ADMIN_AGREGAR_USUARIOS_A_GRUPOS
+Administrador;Inscripciones Especiales: Agregar / Modificar;FALSE;ADMIN_OFERTAS_LABORALES_ABM
+Reserva de laboratorio;Reservar laboratorio docente para un curso (Automático del Sistema);TRUE;RES_LAB_RESERVAR_CURSO_AUTO
+Reserva de laboratorio;Ver reservas confirmadas para un curso (Automático del Sistema);TRUE;RES_LAB_VER_RESERVAS_CURSO_AUTO
+Reserva de laboratorio;Realizar reserva discrecional;TRUE;RES_LAB_REALIZAR_RESERVA_DISCRECIONAL
+Reserva de laboratorio;Confirmar reservas;TRUE;RES_LAB_CONFIRMAR_RESERVAS
+Reserva de laboratorio;Ver totalidad de reservas confirmadas + Pasadas + Rechazadas;TRUE;RES_LAB_VER_TODO_RESERVAS
+Reserva de laboratorio;Ver reservas confirmadas generales para docentes;TRUE;RES_LAB_VER_RESERVAS_GENERALES_DOCENTES
+Reserva de laboratorio;Reservar laboratorio docente para la cátedra (Automático del Sistema);TRUE;RES_LAB_RESERVAR_CATEDRA_AUTO
+Reserva de laboratorio;Ver reservas confirmadas para la cátedra (Automático del Sistema);TRUE;RES_LAB_VER_RESERVAS_CATEDRA
+Reserva de laboratorio;Agregar y Eliminar de pantalla;TRUE;RES_LAB_ABM_PANTALLA
+Aplicaciones de laboratorios;Aplicaciones: Ver listado;TRUE;APLICACIONES_VER_LISTADO
+Aplicaciones de laboratorios;Aplicaciones: Agregar / Editar / Eliminar;TRUE;APLICACIONES_ABM
+Laboratorios;Agregar + Editar + Eliminar;TRUE;LABORATORIOS_ABM
+Prácticas homologación;Cargar Practica (Automático del Sistema);FALSE;APLICACIONES_CARGAR_PRACTICA_AUTO
+Laboratorio abierto;Reservar;TRUE;LAB_ABIERTO_RESERVAR
+Laboratorio abierto;Ver mis reservas actuales y pasadas;TRUE;LAB_ABIERTO_VER_MIS_RESERVAS
+Laboratorio abierto;Ver planilla de tutores y horarios;TRUE;LAB_ABIERTO_VER_PLANILLA_TUTORES
+Laboratorio abierto;Confirmar Reservas;TRUE;LAB_ABIERTO_CONFIRMAR_RESERVAS
+Laboratorio abierto;Suspender alumno;FALSE;LAB_ABIERTO_SUSPENDER_ALUMNO
+Laboratorio abierto;Des-suspender alumno;FALSE;LAB_ABIERTO_DESSUSPENDER_ALUMNO
+Laboratorio abierto;Tutores -> Agregar + Editar + Eliminar;TRUE;LAB_ABIERTO_TUTORES_ABM
+Materias;Agregar + Editar + Eliminar;TRUE;MATERIAS_ABM
+Materias;Ver listado de materias;TRUE;MATERIAS_VER_LISTADO
+Materias;Administrar Correlativas;TRUE;MATERIAS_ADMINISTRAR_CORRELATIVA
+Cursos;Mostrar todos;TRUE;CURSOS_MOSTRAR_TODOS
+Cursos;Agregar + Editar + Eliminar;TRUE;CURSOS_ABM
+Cursos;"Ver ""Mis Cursos"" (Automático del Sistema)";TRUE;CURSOS_VER_MIS_CURSOS_AUTO
+Divisiones;Agregar + Editar + Eliminar;TRUE;DIVISIONES_ABM
+Divisiones;Ver Listado de Divisiones creadas;TRUE;DIVISIONES_VER_LISTADO
+Armarios;Agregar + Editar + Eliminar;TRUE;ARMARIOS_ABM
+Estantes;Agregar + Editar + Eliminar;TRUE;ESTANTES_ABM
+Equipos;Agregar + Editar + Eliminar;TRUE;EQUIPOS_ABM
+Equipos;Ver listado de equipos;TRUE;EQUIPOS_VER_LISTADO
+Equipos;Buscar equipo;TRUE;EQUIPOS_BUSCAR_EQUIPO
+Equipos;Reporte por armario;TRUE;EQUIPOS_REPORTE_ARMARIO
+Equipos;Reporte por tipo;TRUE;EQUIPOS_REPORTE_TIPO
+Equipos;Admin: Puede ver la ubicación de los Equipos;TRUE;EQUIPOS_ADMIN_VER_UBICACION
+Equipos;Reporte por laboratorio;TRUE;EQUIPOS_REPORTE_LABORATORIO
+Equipos;Agregar + Editar + Eliminar Manuales;TRUE;EQUIPOS_ABM_MANUALES
+Préstamo de equipos;Prestar;TRUE;EQUIPOS_PRESTAMO_PRESTAR
+Préstamo de equipos;Ver Prestamos activos y finalizados;TRUE;EQUIPOS_PRESTAMO_VER_PRESTAMOS
+Préstamo de equipos;"Ver ""Mis prestamos activos y finalizados""";TRUE;EQUIPOS_PRESTAMO_VER_MIS_PRESTAMOS
+Equipos type;Agregar + Editar + Eliminar;TRUE;EQUIPOS_TIPO_ABM
+Biblioteca;Agregar + Editar + Eliminar Libro;TRUE;BIBLIOTECA_ABM_LIBRO
+Biblioteca;Ver listado de libros;TRUE;BIBLIOTECA_VER_LISTADO
+Biblioteca;Buscar libro;TRUE;BIBLIOTECA_BUSCAR_LIBRO
+Biblioteca;Puede ver detalles del libro;TRUE;BIBLIOTECA_VER_DETALLES_LIBRO
+Biblioteca;Editoriales: Puede agregar, editar y Eliminar.;TRUE;BIBLIOTECA_EDITORIALES_ABM
+Biblioteca préstamos;Prestar;TRUE;BIBLIOTECA_PRESTAMO_PRESTAR
+Biblioteca préstamos;Ver prestamos activos y finalizados;TRUE;BIBLIOTECA_PRESTAMO_VER_PRESTAMOS
+Biblioteca préstamos;"Ver ""Mis prestamos activos y finalizados""";TRUE;BIBLIOTECA_PRESTAMO_VER_MIS_PRESTAMOS
+Convenio electrocomponentes;Requerir certificado;FALSE;CONV_ELECTROCOMPONENTES_REQUERIR_CERTIFICADO
+Convenio electrocomponentes;Ver detalles del convenio;FALSE;CONV_ELECTROCOMPONENTES_VER_DETALLES
+Convenio electrocomponentes;Administrar certificados pedidos;FALSE;CONV_ELECTROCOMPONENTES_ADMIN_CERTIFICADOS
+Convenio electrocomponentes;Eliminar certificado;FALSE;CONV_ELECTROCOMPONENTES_ELIMINAR_CERTIFICADO
+Convenio Mayer;Requerir certificado;FALSE;CONV_MAYER_REQUERIR_CERTIFICADO
+Convenio Mayer;"Ver ""Mis pedidos actuales y pasados""";FALSE;CONV_MAYER_VER_MIS_PEDIDOS
+Convenio Mayer;Enviar resumen a Mayer;FALSE;CONV_MAYER_ENVIAR_RESUMEN
+Convenio Mayer;Administrar pedidos para Mayer;FALSE;CONV_MAYER_ADMIN_PEDIDOS
+Reporte de fallas;Reportar Fallas de Pc/s e Instrumental;TRUE;REP_FALLAS_BUSCAR_REP_FALLAS
+Reporte de fallas;Buscar Reportes de Fallas;TRUE;REP_FALLAS_REPORTAR_FALLAS
+Reporte de fallas;Administrar Reportes de Fallas;TRUE;REP_FALLAS_ADMIN_REP_FALLAS
+Actividades para usuario del SGE;Publicar y Administrar;FALSE;ACTIVIDADES_USUARIO_SGE_PUBLICAR_ADMIN
+Actividades para usuario del SGE;Ver publicaciones;FALSE;ACTIVIDADES_USUARIO_SGE_VER_PUBLICACIONES
+Actividades abiertas;Publicar y Administrar;FALSE;ACTIVIDADES_ABIERTAS_PUBLICAR_ADMIN
+Actividades abiertas;Ver publicaciones;FALSE;ACTIVIDADES_ABIERTAS_VER_PUBLICACIONES

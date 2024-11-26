@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, SgeNombre } from '@prisma/client';
 import * as sql from '@prisma/client/sql';
 import * as fs from 'fs';
 import csv = require('csv-parser');
@@ -35,50 +35,6 @@ async function main() {
     await prisma.$queryRawTyped(sql.updateUser());
     const admin = userdata.find(u => Number(u.usuario_id) === 3571)?.id ?? '';
     await prisma.$queryRawTyped(sql.insertTutor(admin));
-    const roles: Record<string, number> = {};
-    const promises: Promise<void>[] = [];
-
-    fs.createReadStream('./scripts/permissions.csv')
-        .pipe(csv({ separator: ';', mapHeaders: ({ header }) => header.trim() }))
-        .on('data', async data => {
-            if (!data.grupo || !data.nombre) return;
-            if (data.nombre.includes('grupo')) {
-                const promise = prisma.rol
-                    .create({
-                        data: {
-                            nombre: data.nombre.split('grupo ')[1],
-                            usuarioCreadorId: admin,
-                            usuarioModificadorId: admin,
-                        },
-                    })
-                    .then(role => {
-                        roles[data.bit] = role.id;
-                    });
-                promises.push(promise);
-            } else {
-                await prisma.permiso.create({
-                    data: {
-                        sgeNombre: data.sgeNombre,
-                        grupo: data.grupo,
-                        nombre: data.nombre,
-                        enDesuso: data.enDesuso === 'TRUE',
-                        usuarioCreadorId: admin,
-                        usuarioModificadorId: admin,
-                    },
-                });
-            }
-        })
-        .on('end', async () => {
-            await Promise.all(promises);
-            await prisma.$queryRawTyped(sql.insertRolPermiso(admin));
-
-            for (const u of userdata) {
-                Array.from(u.atributo).forEach(async (bit, i) => {
-                    if (bit === '1' && roles[i])
-                        await prisma.$queryRawTyped(sql.insertUsuarioRol(u.id, roles[i], admin));
-                });
-            }
-        });
 
     await prisma.$queryRawTyped(sql.insertSede());
     await prisma.$queryRawTyped(sql.insertLaboratorio(admin));
@@ -107,6 +63,77 @@ async function main() {
     await prisma.$queryRawTyped(sql.insertCurso(admin));
     await prisma.$queryRawTyped(sql.insertCursoAyudante(admin));
     await prisma.$queryRawTyped(sql.updateUserEsDocente());
+
+    const permisos: {
+        rubro: string;
+        nombre: string;
+        incluido: boolean;
+        sgeNombre: SgeNombre;
+        usuarioCreadorId: string;
+        usuarioModificadorId: string;
+    }[] = [];
+    function readPermisosCsv() {
+        return new Promise<void>((resolve, reject) => {
+            fs.createReadStream('scripts/permisos.csv')
+                .pipe(csv({ separator: ';', mapHeaders: ({ header }) => header.trim() }))
+                .on('data', row => {
+                    permisos.push({
+                        ...row,
+                        incluido: row.incluido === 'TRUE',
+                        usuarioCreadorId: admin,
+                        usuarioModificadorId: admin,
+                    });
+                })
+                .on('end', () => resolve())
+                .on('error', error => reject(error));
+        });
+    }
+
+    const roles: Record<string, string[]> = {};
+    function readRolesCsv() {
+        return new Promise<void>((resolve, reject) => {
+            fs.createReadStream('scripts/roles.csv')
+                .pipe(csv({ separator: ';', mapHeaders: ({ header }) => header.trim() }))
+                .on('data', row => {
+                    if (!roles[row.rol]) roles[row.rol] = [];
+                    roles[row.rol].push(row.permiso);
+                })
+                .on('end', () => resolve())
+                .on('error', error => reject(error));
+        });
+    }
+
+    try {
+        await readPermisosCsv();
+        await prisma.permiso.createMany({ data: permisos });
+        await readRolesCsv();
+        for (const [rol, permisos] of Object.entries(roles)) {
+            await prisma.rol.create({
+                data: {
+                    nombre: rol,
+                    RolPermiso: {
+                        create: [
+                            ...permisos.map(permiso => ({
+                                usuarioCreadorId: admin,
+                                Permiso: { connect: { sgeNombre: permiso as SgeNombre } },
+                            })),
+                        ],
+                    },
+                    UsuarioRol: {
+                        create: {
+                            userId: admin,
+                            usuarioCreadorId: admin,
+                        },
+                    },
+                    usuarioCreadorId: admin,
+                    usuarioModificadorId: admin,
+                },
+            });
+        }
+        await prisma.$queryRawTyped(sql.insertUsuarioRol(admin));
+    } catch (error) {
+        console.error('Error processing CSV file:', error);
+    }
 
     await prisma.$queryRawTyped(sql.updateLibro1());
     await prisma.$queryRawTyped(sql.updateLibro2());

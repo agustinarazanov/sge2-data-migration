@@ -18,12 +18,12 @@ model Account {
   refresh_token            String?
   access_token             String?
   expires_at               Int?
-  refresh_expires_in       Int?
   token_type               String?
   scope                    String?
   id_token                 String?
   session_state            String?
   refresh_token_expires_in Int?
+  refresh_expires_in       Int?
   User                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
@@ -54,18 +54,18 @@ model Curso {
   duracion2                 String?
   dia1                      CursoDia
   dia2                      CursoDia?
-  profesorId                String
   anioDeCarrera             Int
   activo                    Boolean
   ac                        String
   sedeId                    Int
   materiaId                 Int
   divisionId                Int
-  turno                     TurnoCurso
   fechaCreacion             DateTime                    @default(now())
   fechaModificacion         DateTime                    @default(now())
   usuarioCreadorId          String
   usuarioModificadorId      String
+  turno                     TurnoCurso
+  profesorId                String
   Division                  Division                    @relation(fields: [divisionId], references: [id], onDelete: Cascade)
   Materia                   Materia                     @relation(fields: [materiaId], references: [id], onDelete: Cascade)
   User                      User                        @relation(fields: [profesorId], references: [id], onDelete: Cascade)
@@ -83,8 +83,8 @@ model CursoAyudante {
   cursoId              Int
   userId               String
   fechaCreacion        DateTime @default(now())
-  usuarioCreadorId     String
   fechaModificacion    DateTime @default(now())
+  usuarioCreadorId     String
   usuarioModificadorId String
   Curso                Curso    @relation(fields: [cursoId], references: [id], onDelete: Cascade)
   User                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -131,11 +131,11 @@ model Equipo {
   armarioId            Int?
   estanteId            Int?
   estadoId             Int
-  disponible           Boolean         @default(true)
   fechaCreacion        DateTime        @default(now())
   fechaModificacion    DateTime        @default(now())
   usuarioCreadorId     String
   usuarioModificadorId String
+  disponible           Boolean         @default(true)
   Armario              Armario?        @relation(fields: [armarioId], references: [id], onDelete: Restrict)
   EquipoEstado         EquipoEstado    @relation(fields: [estadoId], references: [id])
   Estante              Estante?        @relation(fields: [estanteId], references: [id], onDelete: Restrict)
@@ -175,9 +175,9 @@ model EquipoMarca {
 model EquipoTipo {
   id                              Int                               @id @default(autoincrement())
   nombre                          String
-  imagen                          String?
   fechaCreacion                   DateTime                          @default(now())
   usuarioCreadorId                String
+  imagen                          String?
   Equipo                          Equipo[]
   ReservaLaboratorioAbiertoEquipo ReservaLaboratorioAbiertoEquipo[]
   ReservaLaboratorioCerradoEquipo ReservaLaboratorioCerradoEquipo[]
@@ -189,11 +189,11 @@ model EquipoTipo {
 model Estante {
   id                   Int      @id @default(autoincrement())
   nombre               String
-  armarioId            Int
   fechaCreacion        DateTime @default(now())
   fechaModificacion    DateTime @default(now())
   usuarioCreadorId     String
   usuarioModificadorId String
+  armarioId            Int
   Equipo               Equipo[]
   Armario              Armario  @relation(fields: [armarioId], references: [id], onDelete: Cascade)
   Libro                Libro[]
@@ -205,12 +205,12 @@ model Laboratorio {
   id                        Int                         @id @default(autoincrement())
   nombre                    String
   tienePc                   Boolean                     @default(false)
-  esReservable              Boolean                     @default(false)
   sedeId                    Int
   fechaCreacion             DateTime                    @default(now())
   fechaModificacion         DateTime                    @default(now())
   usuarioCreadorId          String
   usuarioModificadorId      String
+  esReservable              Boolean                     @default(false)
   incluirEnReporte          Boolean                     @default(false)
   Armario                   Armario[]
   Equipo                    Equipo[]
@@ -240,11 +240,11 @@ model Libro {
   idiomaId             Int
   editorialId          Int
   sedeId               Int
-  disponible           Boolean        @default(true)
   fechaCreacion        DateTime       @default(now())
   fechaModificacion    DateTime       @default(now())
   usuarioCreadorId     String
   usuarioModificadorId String
+  disponible           Boolean        @default(true)
   Armario              Armario?       @relation(fields: [armarioId], references: [id], onDelete: Restrict)
   LibroAutor           LibroAutor     @relation(fields: [autorId], references: [id])
   LibroEditorial       LibroEditorial @relation(fields: [editorialId], references: [id])
@@ -308,23 +308,24 @@ model LibroMateria {
 }
 
 model Materia {
-  id                                                                   Int                  @id @default(autoincrement())
+  id                                                                   Int                         @id @default(autoincrement())
   nombre                                                               String
-  codigo                                                               String               @unique
+  codigo                                                               String                      @unique
   anio                                                                 Int
   duracion                                                             MateriaDuracion
   tipo                                                                 MateriaTipo
   directorUsuarioId                                                    String?
-  fechaCreacion                                                        DateTime             @default(now())
-  fechaModificacion                                                    DateTime             @default(now())
+  fechaCreacion                                                        DateTime                    @default(now())
+  fechaModificacion                                                    DateTime                    @default(now())
   usuarioCreadorId                                                     String
   usuarioModificadorId                                                 String
   Curso                                                                Curso[]
   LibroMateria                                                         LibroMateria[]
-  User_Materia_directorUsuarioIdToUser                                 User?                @relation("Materia_directorUsuarioIdToUser", fields: [directorUsuarioId], references: [id])
-  MateriaCorrelativa_MateriaCorrelativa_correlativaIdToMateria         MateriaCorrelativa[] @relation("MateriaCorrelativa_correlativaIdToMateria")
-  MateriaCorrelativa_MateriaCorrelativa_materiaPrerequisitoIdToMateria MateriaCorrelativa[] @relation("MateriaCorrelativa_materiaPrerequisitoIdToMateria")
+  User_Materia_directorUsuarioIdToUser                                 User?                       @relation("Materia_directorUsuarioIdToUser", fields: [directorUsuarioId], references: [id])
+  MateriaCorrelativa_MateriaCorrelativa_correlativaIdToMateria         MateriaCorrelativa[]        @relation("MateriaCorrelativa_correlativaIdToMateria")
+  MateriaCorrelativa_MateriaCorrelativa_materiaPrerequisitoIdToMateria MateriaCorrelativa[]        @relation("MateriaCorrelativa_materiaPrerequisitoIdToMateria")
   MateriaJefeTp                                                        MateriaJefeTp[]
+  ReservaLaboratorioCerrado                                            ReservaLaboratorioCerrado[]
 
   @@index([anio])
   @@index([duracion])
@@ -365,17 +366,17 @@ model Pais {
 
 model Permiso {
   id                   Int          @id @default(autoincrement())
-  sgeNombre            SgeNombre    @unique
   nombre               String
-  grupo                String
-  enDesuso             Boolean      @default(false)
   fechaCreacion        DateTime     @default(now())
   fechaModificacion    DateTime     @default(now())
   usuarioCreadorId     String
   usuarioModificadorId String
+  sgeNombre            SgeNombre    @unique
+  incluido             Boolean      @default(true)
+  rubro                String
   RolPermiso           RolPermiso[]
 
-  @@unique([nombre, grupo])
+  @@unique([nombre, rubro])
   @@index([nombre])
   @@index([sgeNombre])
   @@schema("public")
@@ -399,21 +400,21 @@ model Reserva {
   fechaHoraInicio                       DateTime
   fechaHoraFin                          DateTime
   tipo                                  ReservaTipo
-  motivoRechazo                         String?
-  usuarioSolicitoId                     String
+  usuarioCreadorId                      String
+  usuarioModificadorId                  String
+  usuarioTutorId                        String?
+  fechaCreacion                         DateTime                   @default(now())
+  fechaModificacion                     DateTime
+  fechaAprobacion                       DateTime?
+  fechaRechazo                          DateTime?
+  fechaRenovacion                       DateTime?
   usuarioAprobadorId                    String?
   usuarioRechazadoId                    String?
   usuarioRenovoId                       String?
-  usuarioRecibioId                      String?
-  usuarioTutorId                        String?
-  fechaRenovacion                       DateTime?
-  fechaAprobacion                       DateTime?
-  fechaRechazo                          DateTime?
+  usuarioSolicitoId                     String
   fechaRecibido                         DateTime?
-  usuarioCreadorId                      String
-  usuarioModificadorId                  String
-  fechaCreacion                         DateTime                   @default(now())
-  fechaModificacion                     DateTime
+  usuarioRecibioId                      String?
+  motivoRechazo                         String?
   mostrarEnPantalla                     Boolean                    @default(true)
   asistio                               Boolean                    @default(true)
   User_Reserva_usuarioAprobadorIdToUser User?                      @relation("Reserva_usuarioAprobadorIdToUser", fields: [usuarioAprobadorId], references: [id], onDelete: Restrict)
@@ -455,15 +456,15 @@ model ReservaLaboratorioAbierto {
   id                              Int                               @id @default(autoincrement())
   especialidad                    String
   descripcion                     String                            @default("")
-  concurrentes                    Int
-  laboratorioAbiertoTipo          LaboratorioAbiertoTipo
   reservaId                       Int                               @unique
-  sedeId                          Int
   laboratorioId                   Int?
   fechaCreacion                   DateTime                          @default(now())
   fechaModificacion               DateTime                          @default(now())
   usuarioCreadorId                String
   usuarioModificadorId            String
+  concurrentes                    Int
+  sedeId                          Int
+  laboratorioAbiertoTipo          LaboratorioAbiertoTipo
   Laboratorio                     Laboratorio?                      @relation(fields: [laboratorioId], references: [id], onDelete: Cascade)
   Reserva                         Reserva                           @relation(fields: [reservaId], references: [id], onDelete: Cascade)
   Sede                            Sede                              @relation(fields: [sedeId], references: [id], onDelete: Cascade)
@@ -490,19 +491,24 @@ model ReservaLaboratorioAbiertoEquipo {
 
 model ReservaLaboratorioCerrado {
   id                              Int                               @id @default(autoincrement())
-  descripcion                     String                            @default("")
-  requierePC                      Boolean                           @default(false)
-  requiereProyector               Boolean                           @default(false)
   reservaId                       Int                               @unique
-  sedeId                          Int
   laboratorioId                   Int?
   cursoId                         Int?
-  esDiscrecional                  Boolean                           @default(false)
   fechaCreacion                   DateTime                          @default(now())
   fechaModificacion               DateTime                          @default(now())
   usuarioCreadorId                String
   usuarioModificadorId            String
+  sedeId                          Int
+  descripcion                     String                            @default("")
+  requierePC                      Boolean                           @default(false)
+  requiereProyector               Boolean                           @default(false)
+  esDiscrecional                  Boolean                           @default(false)
+  discrecionalDocenteId           String?
+  discrecionalMateriaId           Int?
+  discrecionalTitulo              String                            @default("")
   Curso                           Curso?                            @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  User                            User?                             @relation(fields: [discrecionalDocenteId], references: [id])
+  Materia                         Materia?                          @relation(fields: [discrecionalMateriaId], references: [id], onDelete: Cascade)
   Laboratorio                     Laboratorio?                      @relation(fields: [laboratorioId], references: [id], onDelete: Cascade)
   Reserva                         Reserva                           @relation(fields: [reservaId], references: [id], onDelete: Cascade)
   Sede                            Sede                              @relation(fields: [sedeId], references: [id], onDelete: Cascade)
@@ -623,10 +629,10 @@ model SoftwareLaboratorio {
 model Tutor {
   userId           String   @id @unique
   diasHorarios     String
-  activo           Boolean
   especialidad     String
   fechaCreacion    DateTime @default(now())
   usuarioCreadorId String
+  activo           Boolean
   User             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([especialidad])
@@ -634,50 +640,51 @@ model Tutor {
 }
 
 model User {
-  id                                       String          @id @default(cuid())
-  name                                     String          @unique
-  email                                    String          @unique
-  emailVerified                            Boolean?
-  image                                    String          @default("/default-avatar.svg")
-  nombre                                   String?
+  id                                       String                      @id @default(cuid())
+  name                                     String                      @unique
+  email                                    String                      @unique
+  image                                    String                      @default("/default-avatar.svg")
   apellido                                 String?
-  fechaNacimiento                          DateTime?       @db.Date
-  direccion                                String?
-  piso                                     String?
-  departamento                             String?
   ciudad                                   String?
   codigoPostal                             String?
+  departamento                             String?
+  direccion                                String?
+  documentoNumero                          String?
+  documentoTipoId                          Int?
+  fechaNacimiento                          DateTime?                   @db.Date
+  fechaRegistro                            DateTime                    @default(now())
+  fechaUltimaActualizacion                 DateTime                    @default(now())
+  fechaUltimoAcceso                        DateTime                    @default(now())
+  gitlab                                   String?
+  legajo                                   String?                     @unique(map: "usuario_legajo_asc_idx")
+  paisIso                                  String?
+  penalizaciones                           Int                         @default(0)
+  piso                                     String?
+  provinciaIso                             String?
   telefonoCasa                             String?
   telefonoCelular                          String?
   telefonoLaboral                          String?
-  documentoNumero                          String?
-  legajo                                   String?         @unique(map: "usuario_legajo_asc_idx")
-  gitlab                                   String?
-  penalizaciones                           Int             @default(0)
-  esDocente                                Boolean         @default(false)
-  esTutor                                  Boolean         @default(false)
-  fechaRegistro                            DateTime        @default(now())
-  fechaUltimoAcceso                        DateTime        @default(now())
-  fechaUltimaActualizacion                 DateTime        @default(now())
-  documentoTipoId                          Int?
-  provinciaIso                             String?
-  paisIso                                  String?
+  nombre                                   String?
+  esDocente                                Boolean                     @default(false)
+  esTutor                                  Boolean                     @default(false)
+  emailVerified                            Boolean?
   Account                                  Account[]
   Curso                                    Curso[]
   CursoAyudante                            CursoAyudante[]
-  Materia_Materia_directorUsuarioIdToUser  Materia[]       @relation("Materia_directorUsuarioIdToUser")
+  Materia_Materia_directorUsuarioIdToUser  Materia[]                   @relation("Materia_directorUsuarioIdToUser")
   MateriaJefeTp                            MateriaJefeTp[]
-  Reserva_Reserva_usuarioAprobadorIdToUser Reserva[]       @relation("Reserva_usuarioAprobadorIdToUser")
-  Reserva_Reserva_usuarioRechazadoIdToUser Reserva[]       @relation("Reserva_usuarioRechazadoIdToUser")
-  Reserva_Reserva_usuarioRecibioIdToUser   Reserva[]       @relation("Reserva_usuarioRecibioIdToUser")
-  Reserva_Reserva_usuarioRenovoIdToUser    Reserva[]       @relation("Reserva_usuarioRenovoIdToUser")
-  Reserva_Reserva_usuarioSolicitoIdToUser  Reserva[]       @relation("Reserva_usuarioSolicitoIdToUser")
-  Reserva_Reserva_usuarioTutorIdToUser     Reserva[]       @relation("Reserva_usuarioTutorIdToUser")
+  Reserva_Reserva_usuarioAprobadorIdToUser Reserva[]                   @relation("Reserva_usuarioAprobadorIdToUser")
+  Reserva_Reserva_usuarioRechazadoIdToUser Reserva[]                   @relation("Reserva_usuarioRechazadoIdToUser")
+  Reserva_Reserva_usuarioRecibioIdToUser   Reserva[]                   @relation("Reserva_usuarioRecibioIdToUser")
+  Reserva_Reserva_usuarioRenovoIdToUser    Reserva[]                   @relation("Reserva_usuarioRenovoIdToUser")
+  Reserva_Reserva_usuarioSolicitoIdToUser  Reserva[]                   @relation("Reserva_usuarioSolicitoIdToUser")
+  Reserva_Reserva_usuarioTutorIdToUser     Reserva[]                   @relation("Reserva_usuarioTutorIdToUser")
+  ReservaLaboratorioCerrado                ReservaLaboratorioCerrado[]
   Session                                  Session[]
   Tutor                                    Tutor?
-  DocumentoTipo                            DocumentoTipo?  @relation(fields: [documentoTipoId], references: [id], onDelete: Restrict)
-  Pais                                     Pais?           @relation(fields: [paisIso], references: [iso], onDelete: Restrict)
-  Provincia                                Provincia?      @relation(fields: [provinciaIso, paisIso], references: [iso, paisIso], onDelete: Restrict)
+  DocumentoTipo                            DocumentoTipo?              @relation(fields: [documentoTipoId], references: [id], onDelete: Restrict)
+  Pais                                     Pais?                       @relation(fields: [paisIso], references: [iso], onDelete: Restrict)
+  Provincia                                Provincia?                  @relation(fields: [provinciaIso, paisIso], references: [iso, paisIso], onDelete: Restrict)
   UsuarioRol                               UsuarioRol[]
 
   @@index([apellido])
@@ -1396,16 +1403,15 @@ model Mails {
   para       String
   cc         String
   cco        String
-  contenido  Json
-  asunto     String
   fechaEnvio DateTime @default(now())
+  asunto     String
+  contenido  Json
 
   @@schema("public")
 }
 
 model Pantalla {
   id               Int      @id @default(autoincrement())
-  sedeId           Int
   docente          String
   materia          String?
   laboratorio      String?
@@ -1413,6 +1419,7 @@ model Pantalla {
   fechaHoraFin     DateTime
   usuarioCreadorId String
   fechaCreacion    DateTime @default(now())
+  sedeId           Int
   Sede             Sede     @relation(fields: [sedeId], references: [id], onDelete: Cascade)
 
   @@schema("public")
@@ -1489,6 +1496,24 @@ enum TurnoCurso {
 }
 
 enum SgeNombre {
+  ADMIN_QUERY
+  ADMIN_MODIFICAR_ATRIBUTOS
+  ADMIN_MODIFICAR_ATRIBUTOS_ADMIN
+  ADMIN_VER_PANEL_ADMIN
+  ADMIN_ABM_USUARIOS
+  ADMIN_ES_ALUMNO
+  ADMIN_ES_DOCENTE
+  ADMIN_ACCESO_SVN
+  ADMIN_ES_TUTOR
+  ADMIN_ES_PANOL
+  ADMIN_ES_CONSEJERO
+  ADMIN_ES_ADMINISTRADOR_WEB
+  ADMIN_ACTUALIZAR_ACTA_CONSEJEROS
+  ADMIN_VER_RESULTADOS_ACTA
+  ADMIN_VER_NOTIFICACIONES_INDEX
+  ADMIN_VER_FICHA_USUARIO
+  ADMIN_AGREGAR_USUARIOS_A_GRUPOS
+  ADMIN_OFERTAS_LABORALES_ABM
   RES_LAB_RESERVAR_CURSO_AUTO
   RES_LAB_VER_RESERVAS_CURSO_AUTO
   RES_LAB_REALIZAR_RESERVA_DISCRECIONAL
@@ -1497,8 +1522,10 @@ enum SgeNombre {
   RES_LAB_VER_RESERVAS_GENERALES_DOCENTES
   RES_LAB_RESERVAR_CATEDRA_AUTO
   RES_LAB_VER_RESERVAS_CATEDRA
+  RES_LAB_ABM_PANTALLA
   APLICACIONES_VER_LISTADO
   APLICACIONES_ABM
+  LABORATORIOS_ABM
   APLICACIONES_CARGAR_PRACTICA_AUTO
   LAB_ABIERTO_RESERVAR
   LAB_ABIERTO_VER_MIS_RESERVAS
@@ -1552,17 +1579,6 @@ enum SgeNombre {
   ACTIVIDADES_USUARIO_SGE_VER_PUBLICACIONES
   ACTIVIDADES_ABIERTAS_PUBLICAR_ADMIN
   ACTIVIDADES_ABIERTAS_VER_PUBLICACIONES
-  ADMIN_ACTUALIZAR_ACTA_CONSEJEROS
-  ADMIN_MODIFICAR_ATRIBUTOS
-  ADMIN_MODIFICAR_ATRIBUTOS_ADMIN
-  ADMIN_VER_PANEL_ADMIN
-  ADMIN_VER_RESULTADOS_ACTA
-  ADMIN_VER_NOTIFICACIONES_INDEX
-  ADMIN_ACCESO_SVN
-  ADMIN_VER_FICHA_USUARIO
-  ADMIN_AGREGAR_USUARIOS_A_GRUPOS
-  ADMIN_OFERTAS_LABORALES_ABM
-  RES_LAB_ABM_PANTALLA
 
   @@schema("public")
 }

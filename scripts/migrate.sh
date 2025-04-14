@@ -1,15 +1,20 @@
-MYSQL_ROOT_PASSWORD=0123456789
-docker run --name mysql -p 3306:3306 --rm -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -e MYSQL_DATABASE=sge2 -d mysql:9.0.1
-echo $(pwd)
-docker cp $(pwd)/scripts/dump.sql mysql:/dumpfile.sql
-echo "Waiting for mysql to start..."
-sleep 10
-docker exec -i mysql sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" sge2 < /dumpfile.sql'
+docker run --name mysql \
+    -p 3306:3306 \
+    -e MYSQL_ROOT_PASSWORD=0123456789 \
+    -e MYSQL_DATABASE=sge2 \
+    -v ./scripts/dump.sql:/docker-entrypoint-initdb.d/init.sql \
+    -d mysql:9.0.1
+
+# Migrate from MySQL to PostgreSQL
 npm install
 npm run build
 npm start
+
+# Migrate from old to public schema
 npx prisma generate
 npx prisma db push
 npx prisma generate --sql
-npx ts-node scripts/script.ts 
+npx ts-node scripts/script.ts
+
+# Stop and remove the MySQL container
 docker stop mysql

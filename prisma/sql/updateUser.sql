@@ -1,6 +1,8 @@
 update "public"."User" "user" set
-    "nombre" = "u"."nombre",
-    "apellido" = "u"."apellido",
+    "nombre" = replace(replace(replace(replace(replace(replace(replace(replace(replace(replace("u"."nombre", 'Ã', 'á'), 'Ã¡', 'á'), 'Ã©', 'é'), 'Ã', 'í'),
+                            'Ã­', 'í'), 'Ã‰', 'é'), 'Ã³', 'ó'), 'Ã“', 'ó'), 'Ãš', 'ú'), 'Ã‘', 'ñ'),
+    "apellido" = replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace("u"."apellido", 'Ã', 'á'), 'Ã¡', 'á'), 'Ã©', 'é'), 'Ã', 'í'),
+                            'Ã­', 'í'), 'Ã‰', 'é'), 'Ã³', 'ó'), 'Ã“', 'ó'), 'Ãš', 'ú'), 'Ã‘', 'ñ'), 'Ã±', 'ñ'), 'Ã¼', 'ü'),
     "ciudad" = "u"."ciudad",
     "codigoPostal" = "u"."codigo_postal",
     "departamento" = "u"."depto",
@@ -19,10 +21,12 @@ update "public"."User" "user" set
     "documentoTipoId" = "documento"."id",
     "provinciaIso" = "provincia"."iso",
     "paisIso" = "pais"."iso",
-    "esTutor" = case when "t"."userid" is null then false else true end
+    "esTutor" = case when "t"."userid" is null then false else true end,
+    "esDocente" = case when "c"."profesor_userid" is null and "c"."ayudante_userid" is null then false else true end
 from "old"."userdata" "u"
 left join "old"."documento" "d" on "d"."documento_id" = "u"."documento_tipo"
 left join "old"."lababierto_tutores" "t" on "u"."usuario_id" = "t"."userid"
+left join "old"."cursos" "c" on "u"."usuario_id" = "c"."profesor_userid"::int or position("u"."usuario_id"::text in coalesce("c"."ayudante_userid", '')) > 0
 left join "public"."DocumentoTipo" "documento" on "documento"."nombre" = "d"."documento"
 left join "public"."Pais" "pais" on "nacionalidad" = "pais"."iso"
 left join "public"."Provincia" "provincia" on "provincia" = "provincia"."iso" and "pais"."iso" = "provincia"."paisIso"

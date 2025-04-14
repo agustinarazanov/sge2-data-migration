@@ -1,4 +1,10 @@
-import { PrismaClient, SgeNombre } from '@prisma/client';
+import {
+    LaboratorioAbiertoTipo,
+    PrismaClient,
+    ReservaEstatus,
+    ReservaTipo,
+    SgeNombre,
+} from '@prisma/client';
 import * as sql from '@prisma/client/sql';
 import * as fs from 'fs';
 import csv = require('csv-parser');
@@ -12,31 +18,21 @@ async function main() {
     await prisma.$queryRawTyped(sql.insertPais());
     await prisma.$queryRawTyped(sql.insertProvincia());
 
-    type UserData = { email: string; id: string; usuario_id: bigint; atributo: string };
-    const userdata: UserData[] = await Promise.all(
-        (await prisma.$queryRawTyped(sql.selectUserdata())).map(async u => {
-            const { id } = await prisma.user.create({
-                data: {
-                    name: u.email.split('@')[0],
-                    email: u.email,
-                },
-            });
-            return {
-                ...u,
-                id,
-                atributo: u.atributo
-                    .split(',')
-                    .map(v => parseInt(v, 16).toString(2).padStart(4, '0'))
-                    .join(''),
-            };
-        }),
-    );
+    const filteredUsers = await prisma.$queryRawTyped(sql.selectUserdata());
+    const userdata = await prisma.user.createManyAndReturn({
+        data: filteredUsers.map(user => ({
+            ...user,
+            name: user.name ?? '',
+        })),
+    });
 
     await prisma.$queryRawTyped(sql.updateUser());
-    const admin = userdata.find(u => Number(u.usuario_id) === 3571)?.id ?? '';
+    const admin = userdata.find(u => u.name === 'hspataro')?.id ?? '';
     await prisma.$queryRawTyped(sql.insertTutor(admin));
 
-    await prisma.$queryRawTyped(sql.insertSede());
+    const sedes = await prisma.$queryRawTyped(sql.insertSede());
+    const medranoId = sedes.find(sede => sede.nombre === 'Medrano')?.id ?? 1;
+
     await prisma.$queryRawTyped(sql.insertLaboratorio(admin));
     await prisma.$queryRawTyped(sql.insertArmario(admin));
     await prisma.$queryRawTyped(sql.insertEstante(admin));
@@ -62,7 +58,144 @@ async function main() {
     await prisma.$queryRawTyped(sql.insertDivision(admin));
     await prisma.$queryRawTyped(sql.insertCurso(admin));
     await prisma.$queryRawTyped(sql.insertCursoAyudante(admin));
-    await prisma.$queryRawTyped(sql.updateUserEsDocente());
+
+    const reservasCerradas = await prisma.$queryRawTyped(sql.selectReservaCerrada());
+
+    await Promise.all(
+        reservasCerradas.map(async reserva => {
+            const reservaCreada = await prisma.reserva.create({
+                data: {
+                    estatus: reserva.estatus ?? ReservaEstatus.FINALIZADA,
+                    fechaHoraInicio: reserva.fechaHoraInicio ?? '',
+                    fechaHoraFin: reserva.fechaHoraFin ?? '',
+                    tipo: ReservaTipo.LABORATORIO_CERRADO,
+                    usuarioSolicitoId: reserva.usuarioSolicitoId,
+                    usuarioAprobadorId: reserva.usuarioAprobadorId,
+                    fechaModificacion: new Date(),
+                    usuarioCreadorId: reserva.usuarioSolicitoId,
+                    usuarioModificadorId: reserva.usuarioSolicitoId,
+                },
+            });
+
+            await prisma.reservaLaboratorioCerrado.create({
+                data: {
+                    descripcion: reserva.descripcion ?? undefined,
+                    requierePC: reserva.requierePC ?? undefined,
+                    reservaId: reservaCreada.id,
+                    sedeId: reserva.sedeId,
+                    laboratorioId: reserva.laboratorioId,
+                    cursoId: reserva.cursoId,
+                    esDiscrecional: reserva.esDiscrecional ?? undefined,
+                    discrecionalMateriaId: reserva.discrecionalMateriaId,
+                    discrecionalDocenteId: reserva.discrecionalDocenteId,
+                    usuarioCreadorId: reserva.usuarioSolicitoId,
+                    usuarioModificadorId: reserva.usuarioSolicitoId,
+                },
+            });
+        }),
+    );
+
+    const reservasAbiertas = await prisma.$queryRawTyped(sql.selectReservaAbierta());
+
+    await Promise.all(
+        reservasAbiertas.map(async reserva => {
+            const reservaCreada = await prisma.reserva.create({
+                data: {
+                    estatus: ReservaEstatus.FINALIZADA,
+                    fechaHoraInicio: reserva.fechaHoraInicio ?? '',
+                    fechaHoraFin: reserva.fechaHoraFin ?? '',
+                    tipo: ReservaTipo.LABORATORIO_ABIERTO,
+                    usuarioSolicitoId: reserva.usuarioSolicitoId ?? admin,
+                    usuarioAprobadorId: reserva.usuarioAprobadorId,
+                    fechaModificacion: new Date(),
+                    usuarioCreadorId: reserva.usuarioSolicitoId ?? admin,
+                    usuarioModificadorId: reserva.usuarioSolicitoId ?? admin,
+                },
+            });
+
+            await prisma.reservaLaboratorioAbierto.create({
+                data: {
+                    especialidad: reserva.especialidad ?? '',
+                    descripcion: reserva.descripcion ?? undefined,
+                    concurrentes: reserva.concurrentes ?? 0,
+                    laboratorioAbiertoTipo: reserva.tipo ?? LaboratorioAbiertoTipo.LA,
+                    reservaId: reservaCreada.id,
+                    sedeId: reserva.sedeId ?? medranoId,
+                    laboratorioId: reserva.laboratorioId,
+                    usuarioCreadorId: reserva.usuarioSolicitoId ?? admin,
+                    usuarioModificadorId: reserva.usuarioSolicitoId ?? admin,
+                },
+            });
+        }),
+    );
+
+    const reservasEquipos = await prisma.$queryRawTyped(sql.selectReservaEquipo());
+
+    await Promise.all(
+        reservasEquipos.map(async reserva => {
+            const reservaCreada = await prisma.reserva.create({
+                data: {
+                    estatus: ReservaEstatus.FINALIZADA,
+                    fechaHoraInicio: reserva.fechaHoraInicio ?? '',
+                    fechaHoraFin: reserva.fechaHoraFin ?? '',
+                    tipo: ReservaTipo.INVENTARIO,
+                    usuarioSolicitoId: reserva.usuarioSolicitoId,
+                    usuarioAprobadorId: reserva.usuarioAprobadorId,
+                    usuarioRecibioId: reserva.usuarioRecibioId,
+                    fechaRecibido: reserva.fechaRecibido ?? undefined,
+                    usuarioRenovoId: reserva.usuarioRenovoId,
+                    fechaRenovacion: reserva.fechaRenovacion ?? undefined,
+                    fechaModificacion: new Date(),
+                    usuarioCreadorId: reserva.usuarioSolicitoId,
+                    usuarioModificadorId: reserva.usuarioSolicitoId,
+                },
+            });
+
+            await prisma.reservaEquipo.create({
+                data: {
+                    fechaEntregado: reserva.fechaHoraInicio ?? '',
+                    reservaId: reservaCreada.id,
+                    equipoId: reserva.equipoId,
+                    usuarioCreadorId: reserva.usuarioSolicitoId,
+                    usuarioModificadorId: reserva.usuarioSolicitoId,
+                },
+            });
+        }),
+    );
+
+    const reservasLibros = await prisma.$queryRawTyped(sql.selectReservaLibro());
+
+    await Promise.all(
+        reservasLibros.map(async reserva => {
+            const reservaCreada = await prisma.reserva.create({
+                data: {
+                    estatus: ReservaEstatus.FINALIZADA,
+                    fechaHoraInicio: reserva.fechaHoraInicio ?? '',
+                    fechaHoraFin: reserva.fechaHoraFin ?? '',
+                    tipo: ReservaTipo.LIBRO,
+                    usuarioSolicitoId: reserva.usuarioSolicitoId,
+                    usuarioAprobadorId: reserva.usuarioAprobadorId,
+                    usuarioRecibioId: reserva.usuarioRecibioId,
+                    fechaRecibido: reserva.fechaRecibido ?? undefined,
+                    usuarioRenovoId: reserva.usuarioRenovoId,
+                    fechaRenovacion: reserva.fechaRenovacion ?? undefined,
+                    fechaModificacion: new Date(),
+                    usuarioCreadorId: reserva.usuarioSolicitoId,
+                    usuarioModificadorId: reserva.usuarioSolicitoId,
+                },
+            });
+
+            await prisma.reservaLibro.create({
+                data: {
+                    fechaEntregado: reserva.fechaHoraInicio ?? '',
+                    reservaId: reservaCreada.id,
+                    libroId: reserva.libroId,
+                    usuarioCreadorId: reserva.usuarioSolicitoId,
+                    usuarioModificadorId: reserva.usuarioSolicitoId,
+                },
+            });
+        }),
+    );
 
     const permisos: {
         rubro: string;
@@ -72,6 +205,7 @@ async function main() {
         usuarioCreadorId: string;
         usuarioModificadorId: string;
     }[] = [];
+
     function readPermisosCsv() {
         return new Promise<void>((resolve, reject) => {
             fs.createReadStream('scripts/permisos.csv')
@@ -90,6 +224,7 @@ async function main() {
     }
 
     const roles: Record<string, string[]> = {};
+
     function readRolesCsv() {
         return new Promise<void>((resolve, reject) => {
             fs.createReadStream('scripts/roles.csv')
@@ -135,52 +270,10 @@ async function main() {
         console.error('Error processing CSV file:', error);
     }
 
-    await prisma.$queryRawTyped(sql.updateLibro1());
-    await prisma.$queryRawTyped(sql.updateLibro2());
-    await prisma.$queryRawTyped(sql.updateLibro3());
-    await prisma.$queryRawTyped(sql.updateLibro4());
-    await prisma.$queryRawTyped(sql.updateLibro5());
-    await prisma.$queryRawTyped(sql.updateLibro6());
-    await prisma.$queryRawTyped(sql.updateLibro7());
-    await prisma.$queryRawTyped(sql.updateLibro8());
-    await prisma.$queryRawTyped(sql.updateLibro9());
-    await prisma.$queryRawTyped(sql.updateLibro10());
-    await prisma.$queryRawTyped(sql.updateLibro11());
-    await prisma.$queryRawTyped(sql.updateLibro12());
-    await prisma.$queryRawTyped(sql.updateLibro13());
-    await prisma.$queryRawTyped(sql.updateLibro14());
-    await prisma.$queryRawTyped(sql.updateLibro15());
-    await prisma.$queryRawTyped(sql.updateLibro16());
-    await prisma.$queryRawTyped(sql.updateLibro17());
-    await prisma.$queryRawTyped(sql.updateLibro18());
-    await prisma.$queryRawTyped(sql.updateLibro19());
-    await prisma.$queryRawTyped(sql.updateLibro20());
-    await prisma.$queryRawTyped(sql.updateLibro21());
-    await prisma.$queryRawTyped(sql.updateLibro22());
-    await prisma.$queryRawTyped(sql.updateLibro23());
-
-    await prisma.$queryRawTyped(sql.updateLibroAutor1());
-    await prisma.$queryRawTyped(sql.updateLibroAutor2());
-    await prisma.$queryRawTyped(sql.updateLibroAutor3());
-    await prisma.$queryRawTyped(sql.updateLibroAutor4());
-    await prisma.$queryRawTyped(sql.updateLibroAutor5());
-    await prisma.$queryRawTyped(sql.updateLibroAutor6());
-    await prisma.$queryRawTyped(sql.updateLibroAutor7());
-    await prisma.$queryRawTyped(sql.updateLibroAutor8());
-    await prisma.$queryRawTyped(sql.updateLibroAutor9());
-    await prisma.$queryRawTyped(sql.updateLibroAutor10());
-    await prisma.$queryRawTyped(sql.updateLibroAutor11());
-
-    await prisma.$queryRawTyped(sql.updateMateria1());
-    await prisma.$queryRawTyped(sql.updateMateria2());
-    await prisma.$queryRawTyped(sql.updateMateria3());
-    await prisma.$queryRawTyped(sql.updateMateria4());
-    await prisma.$queryRawTyped(sql.updateMateria5());
-
-    await prisma.$queryRawTyped(sql.updateEquipo1());
-    await prisma.$queryRawTyped(sql.updateEquipo2());
-    await prisma.$queryRawTyped(sql.updateEquipo3());
-    await prisma.$queryRawTyped(sql.updateEquipo4());
+    await prisma.$queryRawTyped(sql.updateLibro());
+    await prisma.$queryRawTyped(sql.updateLibroAutor());
+    await prisma.$queryRawTyped(sql.updateMateria());
+    await prisma.$queryRawTyped(sql.updateEquipo());
 
     console.log('¡Migración completa!');
     console.log('Verificando datos...');
